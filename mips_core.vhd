@@ -9,7 +9,7 @@ entity mips_core is
         CLK: in std_logic;
         nRST: in std_logic;
         
-        
+        testen: out std_logic;
         test0: out reg_addr_t;
         test1: out word_t
     );
@@ -38,6 +38,7 @@ architecture behavioral of mips_core is
             READ_ADDR1: in reg_addr_t;
             READ_DATA1: out word_t;
             
+            WRITE_EN: in std_logic;
             WRITE_ADDR: in reg_addr_t;
             WRITE_DATA: in word_t
         );
@@ -150,6 +151,7 @@ architecture behavioral of mips_core is
             ALU_OP: out alu_op_t;
             OPERAND0: out word_t;
             OPERAND1: out word_t;
+            WRITE_EN: out std_logic;
             WRITE_ADDR: out reg_addr_t;
             WRITE_MEM_DATA: out word_t;
             IS_LOAD: out std_logic;
@@ -176,6 +178,7 @@ architecture behavioral of mips_core is
             ID_ALU_OP: in alu_op_t;
             ID_OPERAND0: in word_t;
             ID_OPERAND1: in word_t;
+            ID_WRITE_EN: in std_logic;
             ID_WRITE_ADDR: in reg_addr_t;
             ID_WRITE_MEM_DATA: in word_t;
             ID_IS_LOAD: in std_logic;
@@ -186,6 +189,7 @@ architecture behavioral of mips_core is
             EX_ALU_OP: out alu_op_t;
             EX_OPERAND0: out word_t;
             EX_OPERAND1: out word_t;
+            EX_WRITE_EN: out std_logic;
             EX_WRITE_ADDR: out reg_addr_t;
             EX_WRITE_MEM_DATA: out word_t;
             EX_IS_LOAD: out std_logic
@@ -205,6 +209,7 @@ architecture behavioral of mips_core is
             ALU_OP: in alu_op_t;
             OPERAND0: in word_t;
             OPERAND1: in word_t;
+            WRITE_EN: in std_logic;
             WRITE_ADDR: in reg_addr_t;
             WRITE_MEM_DATA: in word_t;
             
@@ -212,6 +217,7 @@ architecture behavioral of mips_core is
             OP_O: out op_t;
             FUNCT_O: out funct_t;
             ALU_RESULT: out word_t;
+            WRITE_EN_O: out std_logic;
             WRITE_ADDR_O: out reg_addr_t;
             WRITE_DATA: out word_t;
             WRITE_MEM_DATA_O: out word_t
@@ -230,6 +236,7 @@ architecture behavioral of mips_core is
             EX_OP: in op_t;
             EX_FUNCT: in funct_t;
             EX_ALU_RESULT: in word_t;
+            EX_WRITE_EN: in std_logic;
             EX_WRITE_ADDR: in reg_addr_t;
             EX_WRITE_DATA: in word_t;
             EX_WRITE_MEM_DATA: in word_t;
@@ -238,6 +245,7 @@ architecture behavioral of mips_core is
             MEM_OP: out op_t;
             MEM_FUNCT: out funct_t;
             MEM_ALU_RESULT: out word_t;
+            MEM_WRITE_EN: out std_logic;
             MEM_WRITE_ADDR: out reg_addr_t;
             MEM_WRITE_DATA: out word_t;
             MEM_WRITE_MEM_DATA: out word_t
@@ -255,6 +263,7 @@ architecture behavioral of mips_core is
             OP: in op_t;
             FUNCT: in funct_t;
             ALU_RESULT: in word_t;
+            WRITE_EN: in std_logic;
             WRITE_ADDR: in reg_addr_t;
             WRITE_DATA: in word_t;
             WRITE_MEM_DATA: in word_t;
@@ -262,6 +271,7 @@ architecture behavioral of mips_core is
             PC_O: out word_t;
             OP_O: out op_t;
             FUNCT_O: out funct_t;
+            WRITE_EN_O: out std_logic;
             WRITE_ADDR_O: out reg_addr_t;
             WRITE_DATA_O: out word_t;
             
@@ -287,12 +297,14 @@ architecture behavioral of mips_core is
             MEM_PC: in word_t;
             MEM_OP: in op_t;
             MEM_FUNCT: in funct_t;
+            MEM_WRITE_EN: in std_logic;
             MEM_WRITE_ADDR: in reg_addr_t;
             MEM_WRITE_DATA: in word_t;
             
             WB_PC: out word_t;
             WB_OP: out op_t;
             WB_FUNCT: out funct_t;
+            WB_WRITE_EN: out std_logic;
             WB_WRITE_ADDR: out reg_addr_t;
             WB_WRITE_DATA: out word_t
         );
@@ -306,9 +318,11 @@ architecture behavioral of mips_core is
             PC: in word_t;
             OP: in op_t;
             FUNCT: in funct_t;
+            WRITE_EN: in std_logic;
             WRITE_ADDR: in reg_addr_t;
             WRITE_DATA: in word_t;
             
+            WRITE_EN_O: out std_logic;
             WRITE_ADDR_O: out reg_addr_t;
             WRITE_DATA_O: out word_t
         );
@@ -354,6 +368,7 @@ architecture behavioral of mips_core is
     signal id_alu_op: alu_op_t;
     signal id_operand0: word_t;
     signal id_operand1: word_t;
+    signal id_write_en: std_logic;
     signal id_write_addr: reg_addr_t;
     signal id_write_mem_data: word_t;
     signal id_branch_en: std_logic;
@@ -366,6 +381,7 @@ architecture behavioral of mips_core is
     signal ex_alu_op: alu_op_t;
     signal ex_operand0: word_t;
     signal ex_operand1: word_t;
+    signal ex_write_en: std_logic;
     signal ex_write_addr: reg_addr_t;
     signal ex_write_mem_data: word_t;
     signal ex_is_load: std_logic;
@@ -374,6 +390,7 @@ architecture behavioral of mips_core is
     signal ex_op_o: op_t;
     signal ex_funct_o: funct_t;
     signal ex_alu_result: word_t;
+    signal ex_write_en_o: std_logic;
     signal ex_write_addr_o: reg_addr_t;
     signal ex_write_data: word_t;
     signal ex_write_mem_data_o: word_t;
@@ -382,6 +399,7 @@ architecture behavioral of mips_core is
     signal mem_op: op_t;
     signal mem_funct: funct_t;
     signal mem_alu_result: word_t;
+    signal mem_write_en: std_logic;
     signal mem_write_addr: reg_addr_t;
     signal mem_write_data: word_t;
     signal mem_write_mem_data: word_t;
@@ -389,6 +407,7 @@ architecture behavioral of mips_core is
     signal mem_pc_o: word_t;
     signal mem_op_o: op_t;
     signal mem_funct_o: funct_t;
+    signal mem_write_en_o: std_logic;
     signal mem_write_addr_o: reg_addr_t;
     signal mem_write_data_o: word_t;
     
@@ -403,14 +422,17 @@ architecture behavioral of mips_core is
     signal wb_pc: word_t;
     signal wb_op: op_t;
     signal wb_funct: funct_t;
+    signal wb_write_en: std_logic;
     signal wb_write_addr: reg_addr_t;
     signal wb_write_data: word_t;
     
+    signal wb_write_en_o: std_logic;
     signal wb_write_addr_o: reg_addr_t;
     signal wb_write_data_o: word_t;
 begin
     RST <= not nRST;
     
+    testen <= wb_write_en_o;
     test0 <= wb_write_addr_o;
     test1 <= wb_write_data_o;
     
@@ -428,11 +450,13 @@ begin
     (
         CLK => CLK,
         RST => RST,
-        
+
         READ_ADDR0 => reg_read_addr0,
         READ_DATA0 => reg_read_data0,
         READ_ADDR1 => reg_read_addr1,
         READ_DATA1 => reg_read_data1,
+
+        WRITE_EN => wb_write_en_o,
         WRITE_ADDR => wb_write_addr_o,
         WRITE_DATA => wb_write_data_o
     );
@@ -456,17 +480,17 @@ begin
         REG_READ_DATA1 => reg_read_data1,
         
         -- ex
-        EX_WRITE_EN => '1', -- TODO
+        EX_WRITE_EN => ex_write_en_o,
         EX_WRITE_ADDR => ex_write_addr_o,
         EX_WRITE_DATA => ex_write_data,
         
         -- mem
-        MEM_WRITE_EN => '1', -- TODO
+        MEM_WRITE_EN => mem_write_en_o,
         MEM_WRITE_ADDR => mem_write_addr_o,
         MEM_WRITE_DATA => mem_write_data_o,
         
         -- wb
-        WB_WRITE_EN => '1', -- TODO
+        WB_WRITE_EN => wb_write_en_o,
         WB_WRITE_ADDR => wb_write_addr_o,
         WB_WRITE_DATA => wb_write_data_o
     );
@@ -539,6 +563,7 @@ begin
         ALU_OP => id_alu_op,
         OPERAND0 => id_operand0,
         OPERAND1 => id_operand1,
+        WRITE_EN => id_write_en,
         WRITE_ADDR => id_write_addr,
         WRITE_MEM_DATA => id_write_mem_data,
         IS_LOAD => id_is_load,
@@ -564,6 +589,7 @@ begin
         ID_ALU_OP => id_alu_op,
         ID_OPERAND0 => id_operand0,
         ID_OPERAND1 => id_operand1,
+        ID_WRITE_EN => id_write_en,
         ID_WRITE_ADDR => id_write_addr,
         ID_WRITE_MEM_DATA => id_write_mem_data,
         ID_IS_LOAD => id_is_load,
@@ -574,6 +600,7 @@ begin
         EX_ALU_OP => ex_alu_op,
         EX_OPERAND0 => ex_operand0,
         EX_OPERAND1 => ex_operand1,
+        EX_WRITE_EN => ex_write_en,
         EX_WRITE_ADDR => ex_write_addr,
         EX_WRITE_MEM_DATA => ex_write_mem_data,
         EX_IS_LOAD => ex_is_load
@@ -592,6 +619,7 @@ begin
         ALU_OP => ex_alu_op,
         OPERAND0 => ex_operand0,
         OPERAND1 => ex_operand1,
+        WRITE_EN => ex_write_en,
         WRITE_ADDR => ex_write_addr,
         WRITE_MEM_DATA => ex_write_mem_data,
         
@@ -599,6 +627,7 @@ begin
         OP_O => ex_op_o,
         FUNCT_O => ex_funct_o,
         ALU_RESULT => ex_alu_result,
+        WRITE_EN_O => ex_write_en_o,
         WRITE_ADDR_O => ex_write_addr_o,
         WRITE_DATA => ex_write_data,
         WRITE_MEM_DATA_O => ex_write_mem_data_o
@@ -616,6 +645,7 @@ begin
         EX_OP => ex_op_o,
         EX_FUNCT => ex_funct_o,
         EX_ALU_RESULT => ex_alu_result,
+        EX_WRITE_EN => ex_write_en_o,
         EX_WRITE_ADDR => ex_write_addr_o,
         EX_WRITE_DATA => ex_write_data,
         EX_WRITE_MEM_DATA => ex_write_mem_data_o,
@@ -624,6 +654,7 @@ begin
         MEM_OP => mem_op,
         MEM_FUNCT => mem_funct,
         MEM_ALU_RESULT => mem_alu_result,
+        MEM_WRITE_EN => mem_write_en,
         MEM_WRITE_ADDR => mem_write_addr,
         MEM_WRITE_DATA => mem_write_data,
         MEM_WRITE_MEM_DATA => mem_write_mem_data
@@ -640,6 +671,7 @@ begin
         OP => mem_op,
         FUNCT => mem_funct,
         ALU_RESULT => mem_alu_result,
+        WRITE_EN => mem_write_en,
         WRITE_ADDR => mem_write_addr,
         WRITE_DATA => mem_write_data,
         WRITE_MEM_DATA => mem_write_mem_data,
@@ -647,6 +679,7 @@ begin
         PC_O => mem_pc_o,
         OP_O => mem_op_o,
         FUNCT_O => mem_funct_o,
+        WRITE_EN_O => mem_write_en_o,
         WRITE_ADDR_O => mem_write_addr_o,
         WRITE_DATA_O => mem_write_data_o,
         
@@ -670,12 +703,14 @@ begin
         MEM_PC => mem_pc_o,
         MEM_OP => mem_op_o,
         MEM_FUNCT => mem_funct_o,
+        MEM_WRITE_EN => mem_write_en_o,
         MEM_WRITE_ADDR => mem_write_addr_o,
         MEM_WRITE_DATA => mem_write_data_o,
         
         WB_PC => wb_pc,
         WB_OP => wb_op,
         WB_FUNCT => wb_funct,
+        WB_WRITE_EN => wb_write_en,
         WB_WRITE_ADDR => wb_write_addr,
         WB_WRITE_DATA => wb_write_data
     );
@@ -688,9 +723,11 @@ begin
         PC => wb_pc,
         OP => wb_op,
         FUNCT => wb_funct,
+        WRITE_EN => wb_write_en,
         WRITE_ADDR => wb_write_addr,
         WRITE_DATA => wb_write_data,
         
+        WRITE_EN_O => wb_write_en_o,
         WRITE_ADDR_O => wb_write_addr_o,
         WRITE_DATA_O => wb_write_data_o
     );

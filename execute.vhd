@@ -17,6 +17,7 @@ entity execute is
         ALU_OP: in alu_op_t;
         OPERAND0: in word_t;
         OPERAND1: in word_t;
+        WRITE_EN: in std_logic;
         WRITE_ADDR: in reg_addr_t;
         WRITE_MEM_DATA: in word_t;
         
@@ -24,6 +25,7 @@ entity execute is
         OP_O: out op_t;
         FUNCT_O: out funct_t;
         ALU_RESULT: out word_t;
+        WRITE_EN_O: out std_logic;
         WRITE_ADDR_O: out reg_addr_t;
         WRITE_DATA: out word_t;
         WRITE_MEM_DATA_O: out word_t
@@ -69,6 +71,7 @@ begin
             OP_O <= (others => '0');
             FUNCT_O <= (others => '0');
             ALU_RESULT <= (others => '0');
+            WRITE_EN_O <= '0';
             WRITE_ADDR_O <= (others => '0');
             WRITE_DATA <=  (others => '0');
             WRITE_MEM_DATA_O <= (others => '0');
@@ -77,6 +80,7 @@ begin
             OP_O <= OP;
             FUNCT_O <= FUNCT;
             ALU_RESULT <= alu_result_buff;
+            WRITE_EN_O <= WRITE_EN;
             WRITE_ADDR_O <= WRITE_ADDR;
             WRITE_DATA <= alu_result_buff;
             WRITE_MEM_DATA_O <= WRITE_MEM_DATA;

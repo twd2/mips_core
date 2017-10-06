@@ -27,6 +27,7 @@ entity instruction_decode is
         ALU_OP: out alu_op_t;
         OPERAND0: out word_t;
         OPERAND1: out word_t;
+        WRITE_EN: out std_logic;
         WRITE_ADDR: out reg_addr_t;
         WRITE_MEM_DATA: out word_t;
         IS_LOAD: out std_logic;
@@ -40,7 +41,6 @@ entity instruction_decode is
 end;
 
 architecture behavioral of instruction_decode is
-    signal reg0_data, reg1_data: word_t;
     signal rs, rt, rd: reg_addr_t;
     signal shamt_buff: std_logic_vector(4 downto 0);
     signal op_buff: op_t;
@@ -59,18 +59,6 @@ begin
     sign_bits <= (others => imm(15));
     ins_addr <= INS(25 downto 0);
     
-    -- read reg 0
-    process(READ_DATA0)
-    begin
-        reg0_data <= READ_DATA0;
-    end process;
-    
-    -- read reg 1
-    process(READ_DATA1)
-    begin
-        reg1_data <= READ_DATA1;
-    end process;
-    
     process(all)
     begin
         if RST = '1' then
@@ -82,6 +70,7 @@ begin
             ALU_OP <= alu_nop;
             OPERAND0 <= (others => '0');
             OPERAND1 <= (others => '0');
+            WRITE_EN <= '0';
             WRITE_ADDR <= (others => '0');
             WRITE_MEM_DATA <= (others => '0');
             BRANCH_EN <= '0';
@@ -96,6 +85,7 @@ begin
             ALU_OP <= alu_nop;
             OPERAND0 <= (others => 'X');
             OPERAND1 <= (others => 'X');
+            WRITE_EN <= '0';
             WRITE_ADDR <= (others => '0');
             WRITE_MEM_DATA <= (others => 'X');
             BRANCH_EN <= '0';
@@ -104,8 +94,9 @@ begin
 
             case op_buff is
                 when op_special => -- type R
-                    OPERAND0 <= reg0_data;
-                    OPERAND1 <= reg1_data;
+                    OPERAND0 <= READ_DATA0;
+                    OPERAND1 <= READ_DATA1;
+                    WRITE_EN <= '1';
                     WRITE_ADDR <= rd;
                     case funct_buff is
                         when func_addu =>
@@ -115,30 +106,32 @@ begin
                     end case;
                 when op_ori => -- type I, zero extended
                     ALU_OP <= alu_or;
-                    OPERAND0 <= reg0_data;
+                    OPERAND0 <= READ_DATA0;
                     OPERAND1 <= zero_bits & imm;
+                    WRITE_EN <= '1';
                     WRITE_ADDR <= rt;
                 /*when op_addiu => -- type I, sign extended
                     ALU_OP <= alu_addu;
-                    OPERAND0 <= reg0_data;
+                    OPERAND0 <= READ_DATA0;
                     OPERAND1 <= sign_bits & imm;
+                    WRITE_EN <= '1';
                     WRITE_ADDR <= rt;
                 */
                 when op_lw =>
                     ALU_OP <= alu_addu;
-                    OPERAND0 <= reg0_data;
+                    OPERAND0 <= READ_DATA0;
                     OPERAND1 <= sign_bits & imm;
+                    WRITE_EN <= '1';
                     WRITE_ADDR <= rt;
                     IS_LOAD <= '1';
                 when op_sw =>
                     ALU_OP <= alu_addu;
-                    OPERAND0 <= reg0_data;
+                    OPERAND0 <= READ_DATA0;
                     OPERAND1 <= sign_bits & imm;
-                    WRITE_MEM_DATA <= reg1_data;
+                    WRITE_MEM_DATA <= READ_DATA1;
                 when op_j => -- type J
                     OPERAND0 <= (others => 'X');
                     OPERAND1 <= (others => 'X');
-                    WRITE_ADDR <= "0" & x"0";
                     
                     BRANCH_EN <= '1';
                     BRANCH_PC <= PC(31 downto 28) & ins_addr & "00";
@@ -148,6 +141,7 @@ begin
                     ALU_OP <= alu_addu;
                     OPERAND0 <= PC;
                     OPERAND1 <= x"00000004";
+                    WRITE_EN <= '1';
                     WRITE_ADDR <= "11111"; -- 31
                     
                     BRANCH_EN <= '1';

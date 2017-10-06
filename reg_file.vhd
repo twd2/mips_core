@@ -16,6 +16,7 @@ entity reg_file is
         READ_ADDR1: in reg_addr_t;
         READ_DATA1: out word_t;
         
+        WRITE_EN: in std_logic;
         WRITE_ADDR: in reg_addr_t;
         WRITE_DATA: in word_t
     );
@@ -23,6 +24,8 @@ end;
 
 architecture behavioral of reg_file is
     signal reg: reg_file_t;
+
+    signal write_en_real: std_logic;
     signal read_addr0_i, read_addr1_i, write_addr_i: integer range 0 to reg_count - 1;
 begin
     read_addr0_i <= to_integer(unsigned(READ_ADDR0));
@@ -49,13 +52,15 @@ begin
         end if;
     end process;
     
+    write_en_real <= '1' when WRITE_EN = '1' and WRITE_ADDR /= "00000" else '0';
+    
     write_proc:
     process(CLK, RST)
     begin
         if RST = '1' then
             reg <= (others => (others => '0'));
         elsif rising_edge(CLK) then
-            if write_addr_i /= 0 then
+            if write_en_real = '1' then
                 reg(write_addr_i) <= WRITE_DATA;
             end if;
         end if;

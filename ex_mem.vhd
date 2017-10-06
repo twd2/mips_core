@@ -16,6 +16,7 @@ entity ex_mem is
         EX_OP: in op_t;
         EX_FUNCT: in funct_t;
         EX_ALU_RESULT: in word_t;
+        EX_WRITE_EN: in std_logic;
         EX_WRITE_ADDR: in reg_addr_t;
         EX_WRITE_DATA: in word_t;
         EX_WRITE_MEM_DATA: in word_t;
@@ -24,6 +25,7 @@ entity ex_mem is
         MEM_OP: out op_t;
         MEM_FUNCT: out funct_t;
         MEM_ALU_RESULT: out word_t;
+        MEM_WRITE_EN: out std_logic;
         MEM_WRITE_ADDR: out reg_addr_t;
         MEM_WRITE_DATA: out word_t;
         MEM_WRITE_MEM_DATA: out word_t
@@ -39,6 +41,7 @@ begin
             MEM_OP <= (others => '0');
             MEM_FUNCT <= (others => '0');
             MEM_ALU_RESULT <= (others => '0');
+            MEM_WRITE_EN <= '0';
             MEM_WRITE_ADDR <= (others => '0');
             MEM_WRITE_DATA <= (others => '0');
             MEM_WRITE_MEM_DATA <= (others => '0');
@@ -48,6 +51,7 @@ begin
                 MEM_OP <= (others => '0');
                 MEM_FUNCT <= (others => '0');
                 MEM_ALU_RESULT <= (others => '0');
+                MEM_WRITE_EN <= '0';
                 MEM_WRITE_ADDR <= (others => '0');
                 MEM_WRITE_DATA <= (others => '0');
                 MEM_WRITE_MEM_DATA <= (others => '0');
@@ -58,6 +62,7 @@ begin
                 MEM_OP <= EX_OP;
                 MEM_FUNCT <= EX_FUNCT;
                 MEM_ALU_RESULT <= EX_ALU_RESULT;
+                MEM_WRITE_EN <= EX_WRITE_EN;
                 MEM_WRITE_ADDR <= EX_WRITE_ADDR;
                 MEM_WRITE_DATA <= EX_WRITE_DATA;
                 MEM_WRITE_MEM_DATA <= EX_WRITE_MEM_DATA;

@@ -15,12 +15,14 @@ entity mem_wb is
         MEM_PC: in word_t;
         MEM_OP: in op_t;
         MEM_FUNCT: in funct_t;
+        MEM_WRITE_EN: in std_logic;
         MEM_WRITE_ADDR: in reg_addr_t;
         MEM_WRITE_DATA: in word_t;
         
         WB_PC: out word_t;
         WB_OP: out op_t;
         WB_FUNCT: out funct_t;
+        WB_WRITE_EN: out std_logic;
         WB_WRITE_ADDR: out reg_addr_t;
         WB_WRITE_DATA: out word_t
     );
@@ -34,6 +36,7 @@ begin
             WB_PC <= (others => '0');
             WB_OP <= (others => '0');
             WB_FUNCT <= (others => '0');
+            WB_WRITE_EN <= '0';
             WB_WRITE_ADDR <= (others => '0');
             WB_WRITE_DATA <= (others => '0');
         elsif rising_edge(CLK) then
@@ -41,6 +44,7 @@ begin
                 WB_PC <= (others => '0');
                 WB_OP <= (others => '0');
                 WB_FUNCT <= (others => '0');
+                WB_WRITE_EN <= '0';
                 WB_WRITE_ADDR <= (others => '0');
                 WB_WRITE_DATA <= (others => '0');
             elsif STALL(stage_wb downto 0) = "111111" then
@@ -49,6 +53,7 @@ begin
                 WB_PC <= MEM_PC;
                 WB_OP <= MEM_OP;
                 WB_FUNCT <= MEM_FUNCT;
+                WB_WRITE_EN <= MEM_WRITE_EN;
                 WB_WRITE_ADDR <= MEM_WRITE_ADDR;
                 WB_WRITE_DATA <= MEM_WRITE_DATA;
             end if;
