@@ -282,7 +282,8 @@ architecture behavioral of mips_core is
             BUS_BYTE_MASK: out std_logic_vector(3 downto 0);
             BUS_EN: out std_logic;
             BUS_nREAD_WRITE: out std_logic;
-            BUS_DONE: in std_logic
+            BUS_DONE: in std_logic;
+            BUS_ERROR: in std_logic
         );
     end component;
 
@@ -689,7 +690,8 @@ begin
         BUS_BYTE_MASK => bus_byte_mask,
         BUS_EN => bus_en,
         BUS_nREAD_WRITE => bus_nread_write,
-        BUS_DONE => '1' -- TODO
+        BUS_DONE => '1', -- TODO
+        BUS_ERROR => '0' -- TODO
     );
     
     mem_wb_inst: mem_wb

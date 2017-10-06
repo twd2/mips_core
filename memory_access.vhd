@@ -34,7 +34,8 @@ entity memory_access is
         BUS_BYTE_MASK: out std_logic_vector(3 downto 0);
         BUS_EN: out std_logic;
         BUS_nREAD_WRITE: out std_logic;
-        BUS_DONE: in std_logic
+        BUS_DONE: in std_logic;
+        BUS_ERROR: in std_logic
     );
 end;
 
