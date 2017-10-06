@@ -1,0 +1,17 @@
+# DS_Store
+.DS_Store
+
+# Personal Configuration
+*.qws
+
+# Outputs
+db/
+incremental_db/
+output_files/
+simulation/
+greybox_tmp/
+*.rpt
+*.img
+
+# Bak
+*.bak

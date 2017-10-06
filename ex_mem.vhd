@@ -1,0 +1,67 @@
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.std_logic_unsigned.all;
+use work.constants.all;
+use work.types.all;
+
+entity ex_mem is
+    port
+    (
+        CLK: in std_logic;
+        RST: in std_logic;
+        
+        STALL: in stall_t;
+
+        EX_PC: in word_t;
+        EX_OP: in op_t;
+        EX_FUNCT: in funct_t;
+        EX_ALU_RESULT: in word_t;
+        EX_WRITE_ADDR: in reg_addr_t;
+        EX_WRITE_DATA: in word_t;
+        EX_WRITE_MEM_DATA: in word_t;
+        
+        MEM_PC: out word_t;
+        MEM_OP: out op_t;
+        MEM_FUNCT: out funct_t;
+        MEM_ALU_RESULT: out word_t;
+        MEM_WRITE_ADDR: out reg_addr_t;
+        MEM_WRITE_DATA: out word_t;
+        MEM_WRITE_MEM_DATA: out word_t
+    );
+end;
+
+architecture behavioral of ex_mem is
+begin
+    process(CLK, RST)
+    begin
+        if RST = '1' then
+            MEM_PC <= (others => '0');
+            MEM_OP <= (others => '0');
+            MEM_FUNCT <= (others => '0');
+            MEM_ALU_RESULT <= (others => '0');
+            MEM_WRITE_ADDR <= (others => '0');
+            MEM_WRITE_DATA <= (others => '0');
+            MEM_WRITE_MEM_DATA <= (others => '0');
+        elsif rising_edge(CLK) then
+            if STALL(stage_mem downto 0) = "01111" then
+                MEM_PC <= (others => '0');
+                MEM_OP <= (others => '0');
+                MEM_FUNCT <= (others => '0');
+                MEM_ALU_RESULT <= (others => '0');
+                MEM_WRITE_ADDR <= (others => '0');
+                MEM_WRITE_DATA <= (others => '0');
+                MEM_WRITE_MEM_DATA <= (others => '0');
+            elsif STALL(stage_mem downto 0) = "11111" then
+                -- do nothing
+            else
+                MEM_PC <= EX_PC;
+                MEM_OP <= EX_OP;
+                MEM_FUNCT <= EX_FUNCT;
+                MEM_ALU_RESULT <= EX_ALU_RESULT;
+                MEM_WRITE_ADDR <= EX_WRITE_ADDR;
+                MEM_WRITE_DATA <= EX_WRITE_DATA;
+                MEM_WRITE_MEM_DATA <= EX_WRITE_MEM_DATA;
+            end if;
+        end if;
+    end process;
+end;
