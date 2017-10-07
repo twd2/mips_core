@@ -15,8 +15,8 @@ entity execute is
         OP: in op_t;
         FUNCT: in funct_t;
         ALU_OP: in alu_op_t;
-        OPERAND0: in word_t;
-        OPERAND1: in word_t;
+        OPERAND_0: in word_t;
+        OPERAND_1: in word_t;
         WRITE_EN: in std_logic;
         WRITE_ADDR: in reg_addr_t;
         WRITE_MEM_DATA: in word_t;
@@ -39,8 +39,8 @@ architecture behavioral of execute is
             RST: in std_logic;
 
             OP: in alu_op_t;
-            OPERAND0: in word_t;
-            OPERAND1: in word_t;
+            OPERAND_0: in word_t;
+            OPERAND_1: in word_t;
             
             OVERFLOW: out std_logic;
             RESULT: out word_t
@@ -55,8 +55,8 @@ begin
     (
         RST => RST,
         OP => ALU_OP,
-        OPERAND0 => OPERAND0,
-        OPERAND1 => OPERAND1,
+        OPERAND_0 => OPERAND_0,
+        OPERAND_1 => OPERAND_1,
         
         OVERFLOW => overflow,
         result => alu_result_buff

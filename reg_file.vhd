@@ -10,11 +10,11 @@ entity reg_file is
         CLK: in std_logic;
         RST: in std_logic;
         
-        READ_ADDR0: in reg_addr_t;
-        READ_DATA0: out word_t;
+        READ_ADDR_0: in reg_addr_t;
+        READ_DATA_0: out word_t;
         
-        READ_ADDR1: in reg_addr_t;
-        READ_DATA1: out word_t;
+        READ_ADDR_1: in reg_addr_t;
+        READ_DATA_1: out word_t;
         
         WRITE_EN: in std_logic;
         WRITE_ADDR: in reg_addr_t;
@@ -26,33 +26,33 @@ architecture behavioral of reg_file is
     signal reg: reg_file_t;
 
     signal write_en_real: std_logic;
-    signal read_addr0_i, read_addr1_i, write_addr_i: integer range 0 to reg_count - 1;
+    signal read_addr_0_i, read_addr_1_i, write_addr_i: integer range 0 to reg_count - 1;
 begin
-    read_addr0_i <= to_integer(unsigned(READ_ADDR0));
-    read_addr1_i <= to_integer(unsigned(READ_ADDR1));
+    read_addr_0_i <= to_integer(unsigned(READ_ADDR_0));
+    read_addr_1_i <= to_integer(unsigned(READ_ADDR_1));
     write_addr_i <= to_integer(unsigned(WRITE_ADDR));
 
     read0_proc:
-    process(reg, read_addr0_i)
+    process(reg, read_addr_0_i)
     begin
-        if read_addr0_i /= 0 then
-            READ_DATA0 <= reg(read_addr0_i);
+        if read_addr_0_i /= 0 then
+            READ_DATA_0 <= reg(read_addr_0_i);
         else
-            READ_DATA0 <= (others => '0');
+            READ_DATA_0 <= (others => '0');
         end if;
     end process;
     
     read1_proc:
-    process(reg, read_addr1_i)
+    process(reg, read_addr_1_i)
     begin
-        if read_addr1_i /= 0 then
-            READ_DATA1 <= reg(read_addr1_i);
+        if read_addr_1_i /= 0 then
+            READ_DATA_1 <= reg(read_addr_1_i);
         else
-            READ_DATA1 <= (others => '0');
+            READ_DATA_1 <= (others => '0');
         end if;
     end process;
     
-    write_en_real <= '1' when WRITE_EN = '1' and WRITE_ADDR /= "00000" else '0';
+    write_en_real <= '1' when WRITE_EN = '1' and not (has_zero_reg = '1' and WRITE_ADDR = zero_reg_addr) else '0';
     
     write_proc:
     process(CLK, RST)

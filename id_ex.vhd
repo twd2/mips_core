@@ -16,8 +16,8 @@ entity id_ex is
         ID_OP: in op_t;
         ID_FUNCT: in funct_t;
         ID_ALU_OP: in alu_op_t;
-        ID_OPERAND0: in word_t;
-        ID_OPERAND1: in word_t;
+        ID_OPERAND_0: in word_t;
+        ID_OPERAND_1: in word_t;
         ID_WRITE_EN: in std_logic;
         ID_WRITE_ADDR: in reg_addr_t;
         ID_WRITE_MEM_DATA: in word_t;
@@ -27,8 +27,8 @@ entity id_ex is
         EX_OP: out op_t;
         EX_FUNCT: out funct_t;
         EX_ALU_OP: out alu_op_t;
-        EX_OPERAND0: out word_t;
-        EX_OPERAND1: out word_t;
+        EX_OPERAND_0: out word_t;
+        EX_OPERAND_1: out word_t;
         EX_WRITE_EN: out std_logic;
         EX_WRITE_ADDR: out reg_addr_t;
         EX_WRITE_MEM_DATA: out word_t;
@@ -45,8 +45,8 @@ begin
             EX_OP <= (others => '0');
             EX_FUNCT <= (others => '0');
             EX_ALU_OP <= alu_nop;
-            EX_OPERAND0 <= (others => '0');
-            EX_OPERAND1 <= (others => '0');
+            EX_OPERAND_0 <= (others => '0');
+            EX_OPERAND_1 <= (others => '0');
             EX_WRITE_EN <= '0';
             EX_WRITE_ADDR <= (others => '0');
             EX_WRITE_MEM_DATA <= (others => '0');
@@ -57,8 +57,8 @@ begin
                 EX_OP <= (others => '0');
                 EX_FUNCT <= (others => '0');
                 EX_ALU_OP <= alu_nop;
-                EX_OPERAND0 <= (others => '0');
-                EX_OPERAND1 <= (others => '0');
+                EX_OPERAND_0 <= (others => '0');
+                EX_OPERAND_1 <= (others => '0');
                 EX_WRITE_EN <= '0';
                 EX_WRITE_ADDR <= (others => '0');
                 EX_WRITE_MEM_DATA <= (others => '0');
@@ -70,8 +70,8 @@ begin
                 EX_OP <= ID_OP;
                 EX_FUNCT <= ID_FUNCT;
                 EX_ALU_OP <= ID_ALU_OP;
-                EX_OPERAND0 <= ID_OPERAND0;
-                EX_OPERAND1 <= ID_OPERAND1;
+                EX_OPERAND_0 <= ID_OPERAND_0;
+                EX_OPERAND_1 <= ID_OPERAND_1;
                 EX_WRITE_EN <= ID_WRITE_EN;
                 EX_WRITE_ADDR <= ID_WRITE_ADDR;
                 EX_WRITE_MEM_DATA <= ID_WRITE_MEM_DATA;

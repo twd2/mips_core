@@ -15,18 +15,18 @@ entity instruction_decode is
         INS: in word_t;
         
         -- reg file
-        READ_ADDR0: out reg_addr_t;
-        READ_DATA0: in word_t;
+        READ_ADDR_0: out reg_addr_t;
+        READ_DATA_0: in word_t;
         
-        READ_ADDR1: out reg_addr_t;
-        READ_DATA1: in word_t;
+        READ_ADDR_1: out reg_addr_t;
+        READ_DATA_1: in word_t;
         
         PC_O: out word_t;
         OP: out op_t;
         FUNCT: out funct_t;
         ALU_OP: out alu_op_t;
-        OPERAND0: out word_t;
-        OPERAND1: out word_t;
+        OPERAND_0: out word_t;
+        OPERAND_1: out word_t;
         WRITE_EN: out std_logic;
         WRITE_ADDR: out reg_addr_t;
         WRITE_MEM_DATA: out word_t;
@@ -62,14 +62,14 @@ begin
     process(all)
     begin
         if RST = '1' then
-            READ_ADDR0 <= (others => '0');
-            READ_ADDR1 <= (others => '0');
+            READ_ADDR_0 <= (others => '0');
+            READ_ADDR_1 <= (others => '0');
             PC_O <= (others => '0');
             OP <= (others => '0');
             FUNCT <= (others => '0');
             ALU_OP <= alu_nop;
-            OPERAND0 <= (others => '0');
-            OPERAND1 <= (others => '0');
+            OPERAND_0 <= (others => '0');
+            OPERAND_1 <= (others => '0');
             WRITE_EN <= '0';
             WRITE_ADDR <= (others => '0');
             WRITE_MEM_DATA <= (others => '0');
@@ -77,14 +77,14 @@ begin
             BRANCH_PC <= (others => '0');
             IS_LOAD <= '0';
         else
-            READ_ADDR0 <= rs;
-            READ_ADDR1 <= rt;
+            READ_ADDR_0 <= rs;
+            READ_ADDR_1 <= rt;
             PC_O <= PC;
             OP <= op_buff;
             FUNCT <= funct_buff;
             ALU_OP <= alu_nop;
-            OPERAND0 <= (others => 'X');
-            OPERAND1 <= (others => 'X');
+            OPERAND_0 <= (others => 'X');
+            OPERAND_1 <= (others => 'X');
             WRITE_EN <= '0';
             WRITE_ADDR <= (others => '0');
             WRITE_MEM_DATA <= (others => 'X');
@@ -94,44 +94,44 @@ begin
 
             case op_buff is
                 when op_special => -- type R
-                    OPERAND0 <= READ_DATA0;
-                    OPERAND1 <= READ_DATA1;
+                    OPERAND_0 <= READ_DATA_0;
+                    OPERAND_1 <= READ_DATA_1;
                     WRITE_EN <= '1';
                     WRITE_ADDR <= rd;
                     case funct_buff is
                         when func_addu =>
                             ALU_OP <= alu_addu;
                         when others =>
-                            
+                            WRITE_EN <= '0';
                     end case;
                 when op_ori => -- type I, zero extended
                     ALU_OP <= alu_or;
-                    OPERAND0 <= READ_DATA0;
-                    OPERAND1 <= zero_bits & imm;
+                    OPERAND_0 <= READ_DATA_0;
+                    OPERAND_1 <= zero_bits & imm;
                     WRITE_EN <= '1';
                     WRITE_ADDR <= rt;
                 /*when op_addiu => -- type I, sign extended
                     ALU_OP <= alu_addu;
-                    OPERAND0 <= READ_DATA0;
-                    OPERAND1 <= sign_bits & imm;
+                    OPERAND_0 <= READ_DATA_0;
+                    OPERAND_1 <= sign_bits & imm;
                     WRITE_EN <= '1';
                     WRITE_ADDR <= rt;
                 */
                 when op_lw =>
                     ALU_OP <= alu_addu;
-                    OPERAND0 <= READ_DATA0;
-                    OPERAND1 <= sign_bits & imm;
+                    OPERAND_0 <= READ_DATA_0;
+                    OPERAND_1 <= sign_bits & imm;
                     WRITE_EN <= '1';
                     WRITE_ADDR <= rt;
                     IS_LOAD <= '1';
                 when op_sw =>
                     ALU_OP <= alu_addu;
-                    OPERAND0 <= READ_DATA0;
-                    OPERAND1 <= sign_bits & imm;
-                    WRITE_MEM_DATA <= READ_DATA1;
+                    OPERAND_0 <= READ_DATA_0;
+                    OPERAND_1 <= sign_bits & imm;
+                    WRITE_MEM_DATA <= READ_DATA_1;
                 when op_j => -- type J
-                    OPERAND0 <= (others => 'X');
-                    OPERAND1 <= (others => 'X');
+                    OPERAND_0 <= (others => 'X');
+                    OPERAND_1 <= (others => 'X');
                     
                     BRANCH_EN <= '1';
                     BRANCH_PC <= PC(31 downto 28) & ins_addr & "00";
@@ -139,8 +139,8 @@ begin
                     -- retaddr = PC + 4
                     -- PC points to next ins, +4 is caused by branch delay slot
                     ALU_OP <= alu_addu;
-                    OPERAND0 <= PC;
-                    OPERAND1 <= x"00000004";
+                    OPERAND_0 <= PC;
+                    OPERAND_1 <= x"00000004";
                     WRITE_EN <= '1';
                     WRITE_ADDR <= "11111"; -- 31
                     
@@ -153,5 +153,6 @@ begin
     
     -- load hazard
     STALL_REQ <= '1' when EX_IS_LOAD = '1' and 
-                          (EX_WRITE_ADDR = READ_ADDR0 or EX_WRITE_ADDR = READ_ADDR1) else '0';
+                          (EX_WRITE_ADDR = READ_ADDR_0 or EX_WRITE_ADDR = READ_ADDR_1) else '0';
+                          -- check zero reg here?
 end;

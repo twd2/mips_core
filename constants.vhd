@@ -3,6 +3,9 @@ use IEEE.std_logic_1164.all;
 
 package constants is
     constant reg_count: integer := 32;
+    constant has_zero_reg: std_logic := '1';
+    constant zero_reg_addr: std_logic_vector := "00000";
+    
     constant stage_pc: integer := 0;
     constant stage_if: integer := 1;
     constant stage_id: integer := 2;

@@ -11,8 +11,8 @@ entity alu is
         RST: in std_logic;
 
         OP: in alu_op_t;
-        OPERAND0: in word_t;
-        OPERAND1: in word_t;
+        OPERAND_0: in word_t;
+        OPERAND_1: in word_t;
         
         OVERFLOW: out std_logic;
         RESULT: out word_t
@@ -22,38 +22,38 @@ end;
 architecture behavioral of alu is
     signal shamt: integer range 0 to 31;
 begin
-    shamt <= to_integer(unsigned(OPERAND1(4 downto 0)));
+    shamt <= to_integer(unsigned(OPERAND_1(4 downto 0)));
 
-    process(RST, OP, OPERAND0, OPERAND1, shamt)
+    process(RST, OP, OPERAND_0, OPERAND_1, shamt)
     begin
         if RST = '1' then
             RESULT <= (others => '0');
         else
             case OP is
                 when alu_addu =>
-                    RESULT <= OPERAND0 + OPERAND1;
+                    RESULT <= OPERAND_0 + OPERAND_1;
                 when alu_subu =>
-                    RESULT <= OPERAND0 - OPERAND1;
+                    RESULT <= OPERAND_0 - OPERAND_1;
                 when alu_or =>
-                    RESULT <= OPERAND0 or OPERAND1;
+                    RESULT <= OPERAND_0 or OPERAND_1;
                 when alu_and =>
-                    RESULT <= OPERAND0 and OPERAND1;
+                    RESULT <= OPERAND_0 and OPERAND_1;
                 when alu_xor =>
-                    RESULT <= OPERAND0 xor OPERAND1;
+                    RESULT <= OPERAND_0 xor OPERAND_1;
                 when alu_not =>
-                    RESULT <= not OPERAND0;
+                    RESULT <= not OPERAND_0;
                 when alu_neg =>
-                    RESULT <= not OPERAND0 + 1;
+                    RESULT <= not OPERAND_0 + 1;
                 when alu_sll =>
-                    RESULT <= to_stdlogicvector(to_bitvector(OPERAND0) sll shamt);
+                    RESULT <= to_stdlogicvector(to_bitvector(OPERAND_0) sll shamt);
                 when alu_slr =>
-                    RESULT <= to_stdlogicvector(to_bitvector(OPERAND0) srl shamt);
+                    RESULT <= to_stdlogicvector(to_bitvector(OPERAND_0) srl shamt);
                 when alu_sar =>
-                    RESULT <= to_stdlogicvector(to_bitvector(OPERAND0) sra shamt);
+                    RESULT <= to_stdlogicvector(to_bitvector(OPERAND_0) sra shamt);
                 when alu_sel0 =>
-                    RESULT <= OPERAND0;
+                    RESULT <= OPERAND_0;
                 when alu_sel1 =>
-                    RESULT <= OPERAND1;
+                    RESULT <= OPERAND_1;
                 when others =>
                     RESULT <= (others => 'X');
             end case;
