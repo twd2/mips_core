@@ -8,8 +8,8 @@ entity ram is
     (
         CLK: in std_logic;
         
-        ADDR: in word_t;
-        DATA: out word_t
+        BUS_REQ: in bus_request_t;
+        BUS_RES: out bus_response_t
     );
 end;
 
@@ -22,23 +22,17 @@ architecture behavioral of ram is
             q		: OUT STD_LOGIC_VECTOR (31 DOWNTO 0)
         );
     END component;
-    
-    signal q: word_t;
 begin
     rom_inst: rom
     port map
     (
-        address => ADDR(11 downto 2),
+        address => BUS_REQ.addr(11 downto 2),
         clock => not CLK,
-        q => q
+        q => BUS_RES.data
     );
 
-    process (ADDR, q)
-    begin
-        if ADDR(1 downto 0) = "00" then
-            DATA <= q;
-        else
-            DATA <= x"DEADBEEF";
-        end if;
-    end process;
+    BUS_RES.done <= '1';
+    BUS_RES.tlb_miss <= '0';
+    BUS_RES.page_fault <= '0';
+    BUS_RES.error <= '1' when BUS_REQ.nread_write = '1' or BUS_REQ.addr(1 downto 0) /= "00" else '0';
 end;

@@ -79,7 +79,7 @@ begin
                     BUS_REQ.data <= WRITE_MEM_DATA;
                 when others =>
             end case;
-            -- TODO: check BUS_RES.tlb_miss, page_fault or error
+            -- TODO(twd2): wait BUS_RES.done and check BUS_RES.tlb_miss, page_fault or error
         end if;
     end process;
 end;

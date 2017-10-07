@@ -21,8 +21,8 @@ architecture behavioral of mips_core is
         (
             CLK: in std_logic;
             
-            ADDR: in word_t;
-            DATA: out word_t
+            BUS_REQ: in bus_request_t;
+            BUS_RES: out bus_response_t
         );
     end component;
     
@@ -101,15 +101,16 @@ architecture behavioral of mips_core is
             
             STALL_REQ: out std_logic;
             STALL: in stall_t;
-
-            ADDR: out word_t;
-            DATA: in word_t;
             
             PC: out word_t;
             INS: out word_t;
             
             BRANCH_EN: in std_logic;
-            BRANCH_PC: in word_t
+            BRANCH_PC: in word_t;
+            
+            -- bus
+            BUS_REQ: out bus_request_t;
+            BUS_RES: in bus_response_t
         );
     end component;
     
@@ -351,6 +352,9 @@ architecture behavioral of mips_core is
     
     signal if_pc, if_ins: word_t;
     
+    signal if_bus_req: bus_request_t;
+    signal if_bus_res: bus_response_t;
+    
     signal id_pc, id_ins, id_pc_o: word_t;
     
     signal id_read_addr0: reg_addr_t;
@@ -431,8 +435,8 @@ begin
     (
         CLK => CLK,
     
-        ADDR => addr,
-        DATA => data
+        BUS_REQ => if_bus_req,
+        BUS_RES => if_bus_res
     );
     
     reg_file_inst: reg_file
@@ -507,14 +511,14 @@ begin
         STALL_REQ => if_stall_req,
         STALL => stall,
         
-        ADDR => addr,
-        DATA => data,
-        
         PC => if_pc,
         INS => if_ins,
         
         BRANCH_EN => id_branch_en,
-        BRANCH_PC => id_branch_pc
+        BRANCH_PC => id_branch_pc,
+        
+        BUS_REQ => if_bus_req,
+        BUS_RES => if_bus_res
     );
     
     if_id_inst: if_id

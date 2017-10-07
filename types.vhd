@@ -10,7 +10,7 @@ package types is
     subtype stall_t is std_logic_vector(5 downto 0);
     type reg_file_t is array(31 downto 0) of word_t;
     
-    type bus_request_t is record
+    type bus_request_t is record -- output for host, input for device
         addr: word_t;
         data: word_t;
         byte_mask: byte_mask_t;
@@ -18,7 +18,7 @@ package types is
         nread_write: std_logic;
     end record;
 
-    type bus_response_t is record
+    type bus_response_t is record -- input for host, output for device
         data: word_t;
         done: std_logic;
         tlb_miss: std_logic;

@@ -12,15 +12,16 @@ entity instruction_fetch is
         
         STALL_REQ: out std_logic;
         STALL: in stall_t;
-
-        ADDR: out word_t;
-        DATA: in word_t;
         
         PC: out word_t;
         INS: out word_t;
         
         BRANCH_EN: in std_logic;
-        BRANCH_PC: in word_t
+        BRANCH_PC: in word_t;
+        
+        -- bus
+        BUS_REQ: out bus_request_t;
+        BUS_RES: in bus_response_t
     );
 end;
 
@@ -29,9 +30,15 @@ architecture behavioral of instruction_fetch is
     signal pc_reg: word_t;
 begin
     pc_4 <= pc_reg + 4;
-    ADDR <= pc_reg; 
-    INS <= DATA; -- TODO(twd2): bus controller
+
+    -- TODO(twd2): wait BUS_RES.done and check BUS_RES.tlb_miss, page_fault or error
+    BUS_REQ.addr <= pc_reg;
+    BUS_REQ.byte_mask <= (others => '1');
+    BUS_REQ.en <= '1';
+    BUS_REQ.nread_write <= '0';
+    INS <= BUS_RES.data;
     PC <= pc_4;
+    
     STALL_REQ <= '0'; -- TODO
 
     process(pc_4, BRANCH_EN, BRANCH_PC)
