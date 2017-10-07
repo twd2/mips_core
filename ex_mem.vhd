@@ -46,7 +46,7 @@ begin
             MEM_WRITE_DATA <= (others => '0');
             MEM_WRITE_MEM_DATA <= (others => '0');
         elsif rising_edge(CLK) then
-            if STALL(stage_mem downto 0) = "01111" then
+            if STALL(stage_mem downto stage_ex) = "01" then
                 MEM_PC <= (others => '0');
                 MEM_OP <= (others => '0');
                 MEM_FUNCT <= (others => '0');
@@ -55,7 +55,7 @@ begin
                 MEM_WRITE_ADDR <= (others => '0');
                 MEM_WRITE_DATA <= (others => '0');
                 MEM_WRITE_MEM_DATA <= (others => '0');
-            elsif STALL(stage_mem downto 0) = "11111" then
+            elsif STALL(stage_mem downto stage_ex) = "11" then
                 -- do nothing
             else
                 MEM_PC <= EX_PC;

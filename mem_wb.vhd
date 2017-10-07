@@ -40,14 +40,14 @@ begin
             WB_WRITE_ADDR <= (others => '0');
             WB_WRITE_DATA <= (others => '0');
         elsif rising_edge(CLK) then
-            if STALL(stage_wb downto 0) = "011111" then
+            if STALL(stage_wb downto stage_mem) = "01" then
                 WB_PC <= (others => '0');
                 WB_OP <= (others => '0');
                 WB_FUNCT <= (others => '0');
                 WB_WRITE_EN <= '0';
                 WB_WRITE_ADDR <= (others => '0');
                 WB_WRITE_DATA <= (others => '0');
-            elsif STALL(stage_wb downto 0) = "111111" then
+            elsif STALL(stage_wb downto stage_mem) = "11" then
                 -- do nothing
             else
                 WB_PC <= MEM_PC;

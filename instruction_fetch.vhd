@@ -32,6 +32,7 @@ begin
     pc_4 <= pc_reg + 4;
 
     -- TODO(twd2): wait BUS_RES.done and check BUS_RES.tlb_miss, page_fault or error
+    BUS_REQ.data <= (others => 'X');
     BUS_REQ.addr <= pc_reg;
     BUS_REQ.byte_mask <= (others => '1');
     BUS_REQ.en <= '1';
@@ -55,9 +56,9 @@ begin
         if RST = '1' then
             pc_reg <= (others => '0');
         elsif rising_edge(CLK) then
-            if STALL(stage_if downto 0) = "01" then
+            if STALL(stage_if downto stage_pc) = "01" then
                 pc_reg <= (others => '0');
-            elsif STALL(stage_if downto 0) = "11" then
+            elsif STALL(stage_if downto stage_pc) = "11" then
                 -- do nothing
             else
                 pc_reg <= next_pc;

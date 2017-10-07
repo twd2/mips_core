@@ -52,7 +52,7 @@ begin
             EX_WRITE_MEM_DATA <= (others => '0');
             EX_IS_LOAD <= '0';
         elsif rising_edge(CLK) then
-            if STALL(stage_ex downto 0) = "0111" then
+            if STALL(stage_ex downto stage_id) = "01" then
                 EX_PC <= (others => '0');
                 EX_OP <= (others => '0');
                 EX_FUNCT <= (others => '0');
@@ -63,7 +63,7 @@ begin
                 EX_WRITE_ADDR <= (others => '0');
                 EX_WRITE_MEM_DATA <= (others => '0');
                 EX_IS_LOAD <= '0';
-            elsif STALL(stage_ex downto 0) = "1111" then
+            elsif STALL(stage_ex downto stage_id) = "11" then
                 -- do nothing
             else    
                 EX_PC <= ID_PC;

@@ -28,10 +28,10 @@ begin
             ID_PC <= (others => '0');
             ID_INS <= (others => '0');
         elsif rising_edge(CLK) then
-            if STALL(stage_id downto 0) = "011" then
+            if STALL(stage_id downto stage_if) = "01" then
                 ID_PC <= (others => '0');
                 ID_INS <= ins_nop;
-            elsif STALL(stage_id downto 0) = "111" then
+            elsif STALL(stage_id downto stage_if) = "11" then
                 -- do nothing
             else
                 ID_PC <= IF_PC;
