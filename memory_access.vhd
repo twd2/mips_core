@@ -28,14 +28,8 @@ entity memory_access is
         WRITE_DATA_O: out word_t;
         
         -- bus
-        BUS_ADDR: out word_t;
-        BUS_DATA_IN: in word_t;
-        BUS_DATA_OUT: out word_t;
-        BUS_BYTE_MASK: out std_logic_vector(3 downto 0);
-        BUS_EN: out std_logic;
-        BUS_nREAD_WRITE: out std_logic;
-        BUS_DONE: in std_logic;
-        BUS_ERROR: in std_logic
+        BUS_REQ: out bus_request_t;
+        BUS_RES: in bus_response_t
     );
 end;
 
@@ -52,11 +46,11 @@ begin
             WRITE_EN_O <= '0';
             WRITE_ADDR_O <= (others => '0');
             WRITE_DATA_O <= (others => '0');
-            BUS_ADDR <= (others => '0');
-            BUS_DATA_OUT <= (others => '0');
-            BUS_BYTE_MASK <= (others => '0');
-            BUS_EN <= '0';
-            BUS_nREAD_WRITE <= '0';
+            BUS_REQ.addr <= (others => '0');
+            BUS_REQ.data <= (others => '0');
+            BUS_REQ.byte_mask <= (others => '0');
+            BUS_REQ.en <= '0';
+            BUS_REQ.nread_write <= '0';
         else
             PC_O <= PC;
             OP_O <= OP;
@@ -64,28 +58,28 @@ begin
             WRITE_EN_O <= WRITE_EN;
             WRITE_ADDR_O <= WRITE_ADDR;
             WRITE_DATA_O <= WRITE_DATA;
-            BUS_ADDR <= (others => 'X');
-            BUS_DATA_OUT <= (others => 'X');
-            BUS_BYTE_MASK <= (others => '0');
-            BUS_EN <= '0';
-            BUS_nREAD_WRITE <= '0';
+            BUS_REQ.addr <= (others => 'X');
+            BUS_REQ.data <= (others => 'X');
+            BUS_REQ.byte_mask <= (others => '0');
+            BUS_REQ.en <= '0';
+            BUS_REQ.nread_write <= '0';
             
             case OP is
                 when op_lw =>
-                    BUS_ADDR <= ALU_RESULT;
-                    BUS_BYTE_MASK <= (others => '1');
-                    BUS_EN <= '1';
-                    BUS_nREAD_WRITE <= '0';
-                    WRITE_DATA_O <= BUS_DATA_IN;
+                    BUS_REQ.addr <= ALU_RESULT;
+                    BUS_REQ.byte_mask <= (others => '1');
+                    BUS_REQ.en <= '1';
+                    BUS_REQ.nread_write <= '0';
+                    WRITE_DATA_O <= BUS_RES.data;
                 when op_sw =>
-                    BUS_ADDR <= ALU_RESULT;
-                    BUS_BYTE_MASK <= (others => '1');
-                    BUS_EN <= '1';
-                    BUS_nREAD_WRITE <= '1';
-                    BUS_DATA_OUT <= WRITE_MEM_DATA;
+                    BUS_REQ.addr <= ALU_RESULT;
+                    BUS_REQ.byte_mask <= (others => '1');
+                    BUS_REQ.en <= '1';
+                    BUS_REQ.nread_write <= '1';
+                    BUS_REQ.data <= WRITE_MEM_DATA;
                 when others =>
             end case;
-            -- TODO: check BUS_DONE or BUS_ERROR
+            -- TODO: check BUS_RES.tlb_miss, page_fault or error
         end if;
     end process;
 end;

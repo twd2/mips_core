@@ -276,14 +276,8 @@ architecture behavioral of mips_core is
             WRITE_DATA_O: out word_t;
             
             -- bus
-            BUS_ADDR: out word_t;
-            BUS_DATA_IN: in word_t;
-            BUS_DATA_OUT: out word_t;
-            BUS_BYTE_MASK: out std_logic_vector(3 downto 0);
-            BUS_EN: out std_logic;
-            BUS_nREAD_WRITE: out std_logic;
-            BUS_DONE: in std_logic;
-            BUS_ERROR: in std_logic
+            BUS_REQ: out bus_request_t;
+            BUS_RES: in bus_response_t
         );
     end component;
 
@@ -412,13 +406,8 @@ architecture behavioral of mips_core is
     signal mem_write_addr_o: reg_addr_t;
     signal mem_write_data_o: word_t;
     
-    signal bus_addr: word_t;
-    signal bus_data_in: word_t;
-    signal bus_data_out: word_t;
-    signal bus_byte_mask: std_logic_vector(3 downto 0);
-    signal bus_en: std_logic;
-    signal bus_nread_write: std_logic;
-    signal bus_done: std_logic;
+    signal mem_bus_req: bus_request_t;
+    signal mem_bus_res: bus_response_t;
 
     signal wb_pc: word_t;
     signal wb_op: op_t;
@@ -684,14 +673,8 @@ begin
         WRITE_ADDR_O => mem_write_addr_o,
         WRITE_DATA_O => mem_write_data_o,
         
-        BUS_ADDR => bus_addr,
-        BUS_DATA_IN => bus_data_in,
-        BUS_DATA_OUT => bus_data_out,
-        BUS_BYTE_MASK => bus_byte_mask,
-        BUS_EN => bus_en,
-        BUS_nREAD_WRITE => bus_nread_write,
-        BUS_DONE => '1', -- TODO
-        BUS_ERROR => '0' -- TODO
+        BUS_REQ => mem_bus_req,
+        BUS_RES => mem_bus_res
     );
     
     mem_wb_inst: mem_wb
@@ -737,11 +720,17 @@ begin
     memory_inst: memory
     port map
     (
-        address => bus_addr(11 downto 2),
-        byteena => bus_byte_mask,
+        address => mem_bus_req.addr(11 downto 2),
+        byteena => mem_bus_req.byte_mask,
         clock => not CLK,
-        data => bus_data_out,
-        wren => bus_nread_write,
-        q => bus_data_in
+        data => mem_bus_req.data,
+        wren => mem_bus_req.nread_write,
+        q => mem_bus_res.data
     );
+    
+    -- TODO: real bus
+    mem_bus_res.done <= '1';
+    mem_bus_res.tlb_miss <= '0';
+    mem_bus_res.page_fault <= '0';
+    mem_bus_res.error <= '0';
 end;
