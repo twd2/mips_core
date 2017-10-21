@@ -34,7 +34,20 @@ entity execute is
         HI_WRITE_EN: out std_logic;
         HI_WRITE_DATA: out word_t;
         LO_WRITE_EN: out std_logic;
-        LO_WRITE_DATA: out word_t
+        LO_WRITE_DATA: out word_t;
+        
+        -- divider interface
+        -- data signals
+        DIV_DIVIDEND: out word_t;
+        DIV_DIV: out word_t;
+        
+        DIV_QUOTIENT: in word_t;
+        DIV_REMAINDER: in word_t;
+        
+        -- control signals
+        DIV_SIGN: out std_logic;
+        DIV_EN: out std_logic;
+        DIV_DONE: in std_logic
     );
 end;
 
@@ -68,11 +81,10 @@ begin
         result => alu_result_buff
     );
 
-    STALL_REQ <= '0'; -- TODO
-    
     process(all)
     begin
         if RST = '1' then
+            STALL_REQ <= '0';
             PC_O <= (others => '0');
             OP_O <= (others => '0');
             FUNCT_O <= (others => '0');
@@ -85,7 +97,12 @@ begin
             HI_WRITE_DATA <= (others => '0');
             LO_WRITE_EN <= '0';
             LO_WRITE_DATA <= (others => '0');
+            DIV_DIVIDEND <= (others => '0');
+            DIV_DIV <= (others => '0');
+            DIV_SIGN <= '0';
+            DIV_EN <= '0';
         else
+            STALL_REQ <= '0';
             PC_O <= PC;
             OP_O <= OP;
             FUNCT_O <= FUNCT;
@@ -98,6 +115,10 @@ begin
             HI_WRITE_DATA <= (others => '0');
             LO_WRITE_EN <= '0';
             LO_WRITE_DATA <= (others => '0');
+            DIV_DIVIDEND <= (others => '0');
+            DIV_DIV <= (others => '0');
+            DIV_SIGN <= '0';
+            DIV_EN <= '0';
 
             -- TODO(twd2): address of load/store
             case OP is
@@ -113,6 +134,26 @@ begin
                         when func_mtlo =>
                             LO_WRITE_EN <= '1';
                             LO_WRITE_DATA <= OPERAND_0;
+                        when func_div =>
+                            STALL_REQ <= not DIV_DONE;
+                            DIV_DIVIDEND <= OPERAND_0;
+                            DIV_DIV <= OPERAND_1;
+                            DIV_SIGN <= '1';
+                            DIV_EN <= '1';
+                            LO_WRITE_EN <= '1';
+                            LO_WRITE_DATA <= DIV_QUOTIENT;
+                            HI_WRITE_EN <= '1';
+                            HI_WRITE_DATA <= DIV_REMAINDER;
+                        when func_divu =>
+                            STALL_REQ <= not DIV_DONE;
+                            DIV_DIVIDEND <= OPERAND_0;
+                            DIV_DIV <= OPERAND_1;
+                            DIV_SIGN <= '0';
+                            DIV_EN <= '1';
+                            LO_WRITE_EN <= '1';
+                            LO_WRITE_DATA <= DIV_QUOTIENT;
+                            HI_WRITE_EN <= '1';
+                            HI_WRITE_DATA <= DIV_REMAINDER;
                         when others =>
                     end case;
                 when others =>

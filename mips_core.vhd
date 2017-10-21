@@ -275,10 +275,45 @@ architecture behavioral of mips_core is
             HI_WRITE_EN: out std_logic;
             HI_WRITE_DATA: out word_t;
             LO_WRITE_EN: out std_logic;
-            LO_WRITE_DATA: out word_t
+            LO_WRITE_DATA: out word_t;
+            
+            -- divider interface
+            -- data signals
+            DIV_DIVIDEND: out word_t;
+            DIV_DIV: out word_t;
+            
+            DIV_QUOTIENT: in word_t;
+            DIV_REMAINDER: in word_t;
+            
+            -- control signals
+            DIV_SIGN: out std_logic;
+            DIV_EN: out std_logic;
+            DIV_DONE: in std_logic
         );
     end component;
- 
+
+    component divider is
+        port
+        (
+            CLK: in std_logic;
+            RST: in std_logic;
+
+            -- data signals
+            DIVIDEND: in word_t;
+            DIV: in word_t;
+            
+            QUOTIENT: out word_t;
+            REMAINDER: out word_t;
+            
+            -- control signals
+            SIGN: in std_logic;
+            EN: in std_logic;
+            CANCEL: in std_logic;
+            STALL: in std_logic;
+            DONE: out std_logic
+        );
+    end component;
+    
     component ex_mem is
         port
         (
@@ -462,6 +497,14 @@ architecture behavioral of mips_core is
     signal ex_hi_write_data: word_t;
     signal ex_lo_write_en: std_logic;
     signal ex_lo_write_data: word_t;
+    
+    signal ex_div_dividend: word_t;
+    signal ex_div_div: word_t;
+    signal ex_div_quotient: word_t;
+    signal ex_div_remainder: word_t;
+    signal ex_div_sign: std_logic;
+    signal ex_div_en: std_logic;
+    signal ex_div_done: std_logic;
 
     signal mem_pc: word_t;
     signal mem_op: op_t;
@@ -754,7 +797,36 @@ begin
         HI_WRITE_EN => ex_hi_write_en,
         HI_WRITE_DATA => ex_hi_write_data,
         LO_WRITE_EN => ex_lo_write_en,
-        LO_WRITE_DATA => ex_lo_write_data
+        LO_WRITE_DATA => ex_lo_write_data,
+        
+        DIV_DIVIDEND => ex_div_dividend,
+        DIV_DIV => ex_div_div,
+        
+        DIV_QUOTIENT => ex_div_quotient,
+        DIV_REMAINDER => ex_div_remainder,
+        
+        DIV_SIGN => ex_div_sign,
+        DIV_EN => ex_div_en,
+        DIV_DONE => ex_div_done
+    );
+    
+    divider_inst: divider
+    port map
+    (
+        CLK => CLK,
+        RST => RST,
+
+        DIVIDEND => ex_div_dividend,
+        DIV => ex_div_div,
+
+        QUOTIENT => ex_div_quotient,
+        REMAINDER => ex_div_remainder,
+
+        SIGN => ex_div_sign,
+        EN => ex_div_en,
+        CANCEL => '0', -- TODO
+        STALL => stall(stage_mem),
+        DONE => ex_div_done
     );
     
     ex_mem_inst: ex_mem

@@ -29,6 +29,8 @@ package constants is
 
     constant func_add: std_logic_vector := "100000";
     constant func_addu: std_logic_vector := "100001";
+    constant func_div: std_logic_vector := "011010";
+    constant func_divu: std_logic_vector := "011011";
     constant func_jalr: std_logic_vector := "001001";
     constant func_mfhi: std_logic_vector := "010000";
     constant func_mflo: std_logic_vector := "010010";

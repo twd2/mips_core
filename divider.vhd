@@ -13,7 +13,6 @@ entity divider is
         RST: in std_logic;
 
         -- data signals
-        
         DIVIDEND: in word_t;
         DIV: in word_t;
         
@@ -59,7 +58,6 @@ begin
     begin
         if RST = '1' then
             DONE <= '0';
-            Q <= (others => '0');
             current_state <= st_init;
         elsif rising_edge(CLK) then
             if CANCEL = '1' then

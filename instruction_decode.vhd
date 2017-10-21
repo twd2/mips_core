@@ -127,6 +127,8 @@ begin
                             -- nothing
                         when func_mthi | func_mtlo =>
                             WRITE_EN <= '0';
+                        when func_div | func_divu =>
+                            WRITE_EN <= '0';
                         when others =>
                             WRITE_EN <= '0';
                     end case;
