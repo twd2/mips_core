@@ -123,6 +123,10 @@ begin
                             
                             BRANCH_EN <= '1';
                             BRANCH_PC <= READ_DATA_0;
+                        when func_mfhi | func_mflo =>
+                            -- nothing
+                        when func_mthi | func_mtlo =>
+                            WRITE_EN <= '0';
                         when others =>
                             WRITE_EN <= '0';
                     end case;

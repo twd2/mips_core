@@ -20,6 +20,8 @@ entity execute is
         WRITE_EN: in std_logic;
         WRITE_ADDR: in reg_addr_t;
         WRITE_MEM_DATA: in word_t;
+        HI: in word_t;
+        LO: in word_t;
         
         PC_O: out word_t;
         OP_O: out op_t;
@@ -28,7 +30,11 @@ entity execute is
         WRITE_EN_O: out std_logic;
         WRITE_ADDR_O: out reg_addr_t;
         WRITE_DATA: out word_t;
-        WRITE_MEM_DATA_O: out word_t
+        WRITE_MEM_DATA_O: out word_t;
+        HI_WRITE_EN: out std_logic;
+        HI_WRITE_DATA: out word_t;
+        LO_WRITE_EN: out std_logic;
+        LO_WRITE_DATA: out word_t
     );
 end;
 
@@ -75,6 +81,10 @@ begin
             WRITE_ADDR_O <= (others => '0');
             WRITE_DATA <=  (others => '0');
             WRITE_MEM_DATA_O <= (others => '0');
+            HI_WRITE_EN <= '0';
+            HI_WRITE_DATA <= (others => '0');
+            LO_WRITE_EN <= '0';
+            LO_WRITE_DATA <= (others => '0');
         else
             PC_O <= PC;
             OP_O <= OP;
@@ -84,8 +94,29 @@ begin
             WRITE_ADDR_O <= WRITE_ADDR;
             WRITE_DATA <= alu_result_buff;
             WRITE_MEM_DATA_O <= WRITE_MEM_DATA;
+            HI_WRITE_EN <= '0';
+            HI_WRITE_DATA <= (others => '0');
+            LO_WRITE_EN <= '0';
+            LO_WRITE_DATA <= (others => '0');
 
             -- TODO(twd2): address of load/store
+            case OP is
+                when op_special =>
+                    case FUNCT is
+                        when func_mfhi =>
+                            WRITE_DATA <= HI;
+                        when func_mflo =>
+                            WRITE_DATA <= LO;
+                        when func_mthi =>
+                            HI_WRITE_EN <= '1';
+                            HI_WRITE_DATA <= OPERAND_0;
+                        when func_mtlo =>
+                            LO_WRITE_EN <= '1';
+                            LO_WRITE_DATA <= OPERAND_0;
+                        when others =>
+                    end case;
+                when others =>
+            end case;
         end if;
     end process;
 end;

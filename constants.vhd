@@ -30,6 +30,10 @@ package constants is
     constant func_add: std_logic_vector := "100000";
     constant func_addu: std_logic_vector := "100001";
     constant func_jalr: std_logic_vector := "001001";
+    constant func_mfhi: std_logic_vector := "010000";
+    constant func_mflo: std_logic_vector := "010010";
+    constant func_mthi: std_logic_vector := "010001";
+    constant func_mtlo: std_logic_vector := "010011";
     
     constant cb_bgezal: std_logic_vector := "10001";
     

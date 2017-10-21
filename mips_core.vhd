@@ -78,6 +78,49 @@ architecture behavioral of mips_core is
             WB_WRITE_DATA: in word_t
         );
     end component;
+    
+    component hilo is
+        port
+        (
+            CLK: in std_logic;
+            RST: in std_logic;
+            
+            HI_WRITE_EN: in std_logic;
+            HI_WRITE_DATA: in word_t;
+            LO_WRITE_EN: in std_logic;
+            LO_WRITE_DATA: in word_t;
+            
+            HI: out word_t;
+            LO: out word_t
+        );
+    end component;
+    
+    component hilo_forward is
+        port
+        (
+            RST: in std_logic;
+            
+            -- read from HILO
+            HILO_HI: in word_t;
+            HILO_LO: in word_t;
+
+            -- mem
+            MEM_HI_WRITE_EN: in std_logic;
+            MEM_HI_WRITE_DATA: in word_t;
+            MEM_LO_WRITE_EN: in std_logic;
+            MEM_LO_WRITE_DATA: in word_t;
+            
+            -- wb
+            WB_HI_WRITE_EN: in std_logic;
+            WB_HI_WRITE_DATA: in word_t;
+            WB_LO_WRITE_EN: in std_logic;
+            WB_LO_WRITE_DATA: in word_t;
+            
+            -- HILO content for ex
+            EX_HI: out word_t;
+            EX_LO: out word_t
+        );
+    end component;
 
     component controller is
         port
@@ -102,6 +145,9 @@ architecture behavioral of mips_core is
             STALL_REQ: out std_logic;
             STALL: in stall_t;
             
+            FLUSH: in std_logic;
+            FLUSH_PC: in word_t;
+            
             PC: out word_t;
             INS: out word_t;
             
@@ -121,6 +167,7 @@ architecture behavioral of mips_core is
             RST: in std_logic;
             
             STALL: in stall_t;
+            FLUSH: in std_logic;
 
             IF_PC: in word_t;
             IF_INS: in word_t;
@@ -172,6 +219,7 @@ architecture behavioral of mips_core is
             RST: in std_logic;
             
             STALL: in stall_t;
+            FLUSH: in std_logic;
 
             ID_PC: in word_t;
             ID_OP: in op_t;
@@ -213,6 +261,8 @@ architecture behavioral of mips_core is
             WRITE_EN: in std_logic;
             WRITE_ADDR: in reg_addr_t;
             WRITE_MEM_DATA: in word_t;
+            HI: in word_t;
+            LO: in word_t;
             
             PC_O: out word_t;
             OP_O: out op_t;
@@ -221,7 +271,11 @@ architecture behavioral of mips_core is
             WRITE_EN_O: out std_logic;
             WRITE_ADDR_O: out reg_addr_t;
             WRITE_DATA: out word_t;
-            WRITE_MEM_DATA_O: out word_t
+            WRITE_MEM_DATA_O: out word_t;
+            HI_WRITE_EN: out std_logic;
+            HI_WRITE_DATA: out word_t;
+            LO_WRITE_EN: out std_logic;
+            LO_WRITE_DATA: out word_t
         );
     end component;
  
@@ -232,6 +286,7 @@ architecture behavioral of mips_core is
             RST: in std_logic;
             
             STALL: in stall_t;
+            FLUSH: in std_logic;
 
             EX_PC: in word_t;
             EX_OP: in op_t;
@@ -241,6 +296,10 @@ architecture behavioral of mips_core is
             EX_WRITE_ADDR: in reg_addr_t;
             EX_WRITE_DATA: in word_t;
             EX_WRITE_MEM_DATA: in word_t;
+            EX_HI_WRITE_EN: in std_logic;
+            EX_HI_WRITE_DATA: in word_t;
+            EX_LO_WRITE_EN: in std_logic;
+            EX_LO_WRITE_DATA: in word_t;
             
             MEM_PC: out word_t;
             MEM_OP: out op_t;
@@ -249,7 +308,11 @@ architecture behavioral of mips_core is
             MEM_WRITE_EN: out std_logic;
             MEM_WRITE_ADDR: out reg_addr_t;
             MEM_WRITE_DATA: out word_t;
-            MEM_WRITE_MEM_DATA: out word_t
+            MEM_WRITE_MEM_DATA: out word_t;
+            MEM_HI_WRITE_EN: out std_logic;
+            MEM_HI_WRITE_DATA: out word_t;
+            MEM_LO_WRITE_EN: out std_logic;
+            MEM_LO_WRITE_DATA: out word_t
         );
     end component;
  
@@ -268,6 +331,10 @@ architecture behavioral of mips_core is
             WRITE_ADDR: in reg_addr_t;
             WRITE_DATA: in word_t;
             WRITE_MEM_DATA: in word_t;
+            HI_WRITE_EN: in std_logic;
+            HI_WRITE_DATA: in word_t;
+            LO_WRITE_EN: in std_logic;
+            LO_WRITE_DATA: in word_t;
             
             PC_O: out word_t;
             OP_O: out op_t;
@@ -275,6 +342,10 @@ architecture behavioral of mips_core is
             WRITE_EN_O: out std_logic;
             WRITE_ADDR_O: out reg_addr_t;
             WRITE_DATA_O: out word_t;
+            HI_WRITE_EN_O: out std_logic;
+            HI_WRITE_DATA_O: out word_t;
+            LO_WRITE_EN_O: out std_logic;
+            LO_WRITE_DATA_O: out word_t;
             
             -- bus
             BUS_REQ: out bus_request_t;
@@ -289,6 +360,7 @@ architecture behavioral of mips_core is
             RST: in std_logic;
             
             STALL: in stall_t;
+            FLUSH: in std_logic;
 
             MEM_PC: in word_t;
             MEM_OP: in op_t;
@@ -296,31 +368,21 @@ architecture behavioral of mips_core is
             MEM_WRITE_EN: in std_logic;
             MEM_WRITE_ADDR: in reg_addr_t;
             MEM_WRITE_DATA: in word_t;
+            MEM_HI_WRITE_EN: in std_logic;
+            MEM_HI_WRITE_DATA: in word_t;
+            MEM_LO_WRITE_EN: in std_logic;
+            MEM_LO_WRITE_DATA: in word_t;
             
             WB_PC: out word_t;
             WB_OP: out op_t;
             WB_FUNCT: out funct_t;
             WB_WRITE_EN: out std_logic;
             WB_WRITE_ADDR: out reg_addr_t;
-            WB_WRITE_DATA: out word_t
-        );
-    end component;
-
-    component write_back is
-        port
-        (
-            RST: in std_logic;
-
-            PC: in word_t;
-            OP: in op_t;
-            FUNCT: in funct_t;
-            WRITE_EN: in std_logic;
-            WRITE_ADDR: in reg_addr_t;
-            WRITE_DATA: in word_t;
-            
-            WRITE_EN_O: out std_logic;
-            WRITE_ADDR_O: out reg_addr_t;
-            WRITE_DATA_O: out word_t
+            WB_WRITE_DATA: out word_t;
+            WB_HI_WRITE_EN: out std_logic;
+            WB_HI_WRITE_DATA: out word_t;
+            WB_LO_WRITE_EN: out std_logic;
+            WB_LO_WRITE_DATA: out word_t
         );
     end component;
     
@@ -336,12 +398,14 @@ architecture behavioral of mips_core is
         );
     END component;
  
-    signal RST: std_logic;
+    signal RST, comb_rst: std_logic;
     
     signal reg_read_addr_0: reg_addr_t;
     signal reg_read_data_0: word_t;
     signal reg_read_addr_1: reg_addr_t;
     signal reg_read_data_1: word_t;
+    
+    signal hilo_hi, hilo_lo: word_t;
     
     signal if_stall_req: std_logic;
     signal id_stall_req: std_logic;
@@ -382,6 +446,8 @@ architecture behavioral of mips_core is
     signal ex_write_en: std_logic;
     signal ex_write_addr: reg_addr_t;
     signal ex_write_mem_data: word_t;
+    signal ex_hi: word_t;
+    signal ex_lo: word_t;
     signal ex_is_load: std_logic;
     
     signal ex_pc_o: word_t;
@@ -392,6 +458,10 @@ architecture behavioral of mips_core is
     signal ex_write_addr_o: reg_addr_t;
     signal ex_write_data: word_t;
     signal ex_write_mem_data_o: word_t;
+    signal ex_hi_write_en: std_logic;
+    signal ex_hi_write_data: word_t;
+    signal ex_lo_write_en: std_logic;
+    signal ex_lo_write_data: word_t;
 
     signal mem_pc: word_t;
     signal mem_op: op_t;
@@ -401,6 +471,10 @@ architecture behavioral of mips_core is
     signal mem_write_addr: reg_addr_t;
     signal mem_write_data: word_t;
     signal mem_write_mem_data: word_t;
+    signal mem_hi_write_en: std_logic;
+    signal mem_hi_write_data: word_t;
+    signal mem_lo_write_en: std_logic;
+    signal mem_lo_write_data: word_t;
     
     signal mem_pc_o: word_t;
     signal mem_op_o: op_t;
@@ -408,6 +482,10 @@ architecture behavioral of mips_core is
     signal mem_write_en_o: std_logic;
     signal mem_write_addr_o: reg_addr_t;
     signal mem_write_data_o: word_t;
+    signal mem_hi_write_en_o: std_logic;
+    signal mem_hi_write_data_o: word_t;
+    signal mem_lo_write_en_o: std_logic;
+    signal mem_lo_write_data_o: word_t;
     
     signal mem_bus_req: bus_request_t;
     signal mem_bus_res: bus_response_t;
@@ -418,16 +496,17 @@ architecture behavioral of mips_core is
     signal wb_write_en: std_logic;
     signal wb_write_addr: reg_addr_t;
     signal wb_write_data: word_t;
-    
-    signal wb_write_en_o: std_logic;
-    signal wb_write_addr_o: reg_addr_t;
-    signal wb_write_data_o: word_t;
+    signal wb_hi_write_en: std_logic;
+    signal wb_hi_write_data: word_t;
+    signal wb_lo_write_en: std_logic;
+    signal wb_lo_write_data: word_t;
 begin
     RST <= not nRST;
+    comb_rst <= '0';
     
-    testen <= wb_write_en_o;
-    test_0 <= wb_write_addr_o;
-    test_1 <= wb_write_data_o;
+    testen <= wb_write_en;
+    test_0 <= wb_write_addr;
+    test_1 <= wb_write_data;
     
     ram_inst: ram
     port map
@@ -449,15 +528,15 @@ begin
         READ_ADDR_1 => reg_read_addr_1,
         READ_DATA_1 => reg_read_data_1,
 
-        WRITE_EN => wb_write_en_o,
-        WRITE_ADDR => wb_write_addr_o,
-        WRITE_DATA => wb_write_data_o
+        WRITE_EN => wb_write_en,
+        WRITE_ADDR => wb_write_addr,
+        WRITE_DATA => wb_write_data
     );
     
     reg_forward_inst: reg_forward
     port map
     (
-        RST => RST,
+        RST => comb_rst,
         
         ID_READ_ADDR_0 => id_read_addr_0,
         ID_READ_DATA_0 => id_read_data_0,
@@ -483,15 +562,56 @@ begin
         MEM_WRITE_DATA => mem_write_data_o,
         
         -- wb
-        WB_WRITE_EN => wb_write_en_o,
-        WB_WRITE_ADDR => wb_write_addr_o,
-        WB_WRITE_DATA => wb_write_data_o
+        WB_WRITE_EN => wb_write_en,
+        WB_WRITE_ADDR => wb_write_addr,
+        WB_WRITE_DATA => wb_write_data
+    );
+    
+    hilo_inst: hilo
+    port map
+    (
+        CLK => CLK,
+        RST => RST,
+        
+        HI_WRITE_EN => wb_hi_write_en,
+        HI_WRITE_DATA => wb_hi_write_data,
+        LO_WRITE_EN => wb_lo_write_en,
+        LO_WRITE_DATA => wb_lo_write_data,
+        
+        HI => hilo_hi,
+        LO => hilo_lo
+    );
+    
+    hilo_forward_inst: hilo_forward
+    port map
+    (
+        RST => comb_rst,
+        
+        -- read from HILO
+        HILO_HI => hilo_hi,
+        HILO_LO => hilo_lo,
+
+        -- mem
+        MEM_HI_WRITE_EN => mem_hi_write_en_o,
+        MEM_HI_WRITE_DATA => mem_hi_write_data_o,
+        MEM_LO_WRITE_EN => mem_lo_write_en_o,
+        MEM_LO_WRITE_DATA => mem_lo_write_data_o,
+        
+        -- wb
+        WB_HI_WRITE_EN => wb_hi_write_en,
+        WB_HI_WRITE_DATA => wb_hi_write_data,
+        WB_LO_WRITE_EN => wb_lo_write_en,
+        WB_LO_WRITE_DATA => wb_lo_write_data,
+        
+        -- HILO content for ex
+        EX_HI => ex_hi,
+        EX_LO => ex_lo
     );
     
     controller_inst: controller
     port map
     (
-        RST => RST,
+        RST => comb_rst,
 
         IF_STALL_REQ => if_stall_req,
         ID_STALL_REQ => id_stall_req,
@@ -510,6 +630,9 @@ begin
         STALL_REQ => if_stall_req,
         STALL => stall,
         
+        FLUSH => '0', -- TODO
+        FLUSH_PC => (others => '0'),
+        
         PC => if_pc,
         INS => if_ins,
         
@@ -527,6 +650,7 @@ begin
         RST => RST,
         
         STALL => stall,
+        FLUSH => '0', -- TODO
         
         IF_PC => if_pc,
         IF_INS => if_ins,
@@ -538,7 +662,7 @@ begin
     instruction_decode_inst: instruction_decode
     port map
     (
-        RST => RST,
+        RST => comb_rst,
         
         STALL_REQ => id_stall_req,
         
@@ -575,6 +699,7 @@ begin
         RST => RST,
         
         STALL => stall,
+        FLUSH => '0', -- TODO
 
         ID_PC => id_pc_o,
         ID_OP => id_op,
@@ -602,7 +727,7 @@ begin
     execute_inst: execute
     port map
     (
-        RST => RST,
+        RST => comb_rst,
         
         STALL_REQ => ex_stall_req,
 
@@ -615,6 +740,8 @@ begin
         WRITE_EN => ex_write_en,
         WRITE_ADDR => ex_write_addr,
         WRITE_MEM_DATA => ex_write_mem_data,
+        HI => ex_hi,
+        LO => ex_lo,
         
         PC_O => ex_pc_o,
         OP_O => ex_op_o,
@@ -623,7 +750,11 @@ begin
         WRITE_EN_O => ex_write_en_o,
         WRITE_ADDR_O => ex_write_addr_o,
         WRITE_DATA => ex_write_data,
-        WRITE_MEM_DATA_O => ex_write_mem_data_o
+        WRITE_MEM_DATA_O => ex_write_mem_data_o,
+        HI_WRITE_EN => ex_hi_write_en,
+        HI_WRITE_DATA => ex_hi_write_data,
+        LO_WRITE_EN => ex_lo_write_en,
+        LO_WRITE_DATA => ex_lo_write_data
     );
     
     ex_mem_inst: ex_mem
@@ -633,6 +764,7 @@ begin
         RST => RST,
         
         STALL => stall,
+        FLUSH => '0', -- TODO
 
         EX_PC => ex_pc_o,
         EX_OP => ex_op_o,
@@ -642,6 +774,10 @@ begin
         EX_WRITE_ADDR => ex_write_addr_o,
         EX_WRITE_DATA => ex_write_data,
         EX_WRITE_MEM_DATA => ex_write_mem_data_o,
+        EX_HI_WRITE_EN => ex_hi_write_en,
+        EX_HI_WRITE_DATA => ex_hi_write_data,
+        EX_LO_WRITE_EN => ex_lo_write_en,
+        EX_LO_WRITE_DATA => ex_lo_write_data,
         
         MEM_PC => mem_pc,
         MEM_OP => mem_op,
@@ -650,13 +786,17 @@ begin
         MEM_WRITE_EN => mem_write_en,
         MEM_WRITE_ADDR => mem_write_addr,
         MEM_WRITE_DATA => mem_write_data,
-        MEM_WRITE_MEM_DATA => mem_write_mem_data
+        MEM_WRITE_MEM_DATA => mem_write_mem_data,
+        MEM_HI_WRITE_EN => mem_hi_write_en,
+        MEM_HI_WRITE_DATA => mem_hi_write_data,
+        MEM_LO_WRITE_EN => mem_lo_write_en,
+        MEM_LO_WRITE_DATA => mem_lo_write_data
     );
     
     memory_access_inst: memory_access
     port map
     (
-        RST => RST,
+        RST => comb_rst,
         
         STALL_REQ => mem_stall_req,
 
@@ -668,6 +808,10 @@ begin
         WRITE_ADDR => mem_write_addr,
         WRITE_DATA => mem_write_data,
         WRITE_MEM_DATA => mem_write_mem_data,
+        HI_WRITE_EN => mem_hi_write_en,
+        HI_WRITE_DATA => mem_hi_write_data,
+        LO_WRITE_EN => mem_lo_write_en,
+        LO_WRITE_DATA => mem_lo_write_data,
         
         PC_O => mem_pc_o,
         OP_O => mem_op_o,
@@ -675,6 +819,10 @@ begin
         WRITE_EN_O => mem_write_en_o,
         WRITE_ADDR_O => mem_write_addr_o,
         WRITE_DATA_O => mem_write_data_o,
+        HI_WRITE_EN_O => mem_hi_write_en_o,
+        HI_WRITE_DATA_O => mem_hi_write_data_o,
+        LO_WRITE_EN_O => mem_lo_write_en_o,
+        LO_WRITE_DATA_O => mem_lo_write_data_o,
         
         BUS_REQ => mem_bus_req,
         BUS_RES => mem_bus_res
@@ -687,6 +835,7 @@ begin
         RST => RST,
         
         STALL => stall,
+        FLUSH => '0', -- TODO
 
         MEM_PC => mem_pc_o,
         MEM_OP => mem_op_o,
@@ -694,30 +843,21 @@ begin
         MEM_WRITE_EN => mem_write_en_o,
         MEM_WRITE_ADDR => mem_write_addr_o,
         MEM_WRITE_DATA => mem_write_data_o,
+        MEM_HI_WRITE_EN => mem_hi_write_en_o,
+        MEM_HI_WRITE_DATA => mem_hi_write_data_o,
+        MEM_LO_WRITE_EN => mem_lo_write_en_o,
+        MEM_LO_WRITE_DATA => mem_lo_write_data_o,
         
         WB_PC => wb_pc,
         WB_OP => wb_op,
         WB_FUNCT => wb_funct,
         WB_WRITE_EN => wb_write_en,
         WB_WRITE_ADDR => wb_write_addr,
-        WB_WRITE_DATA => wb_write_data
-    );
-    
-    write_back_inst: write_back
-    port map
-    (
-        RST => RST,
-
-        PC => wb_pc,
-        OP => wb_op,
-        FUNCT => wb_funct,
-        WRITE_EN => wb_write_en,
-        WRITE_ADDR => wb_write_addr,
-        WRITE_DATA => wb_write_data,
-        
-        WRITE_EN_O => wb_write_en_o,
-        WRITE_ADDR_O => wb_write_addr_o,
-        WRITE_DATA_O => wb_write_data_o
+        WB_WRITE_DATA => wb_write_data,
+        WB_HI_WRITE_EN => wb_hi_write_en,
+        WB_HI_WRITE_DATA => wb_hi_write_data,
+        WB_LO_WRITE_EN => wb_lo_write_en,
+        WB_LO_WRITE_DATA => wb_lo_write_data
     );
     
     memory_inst: memory

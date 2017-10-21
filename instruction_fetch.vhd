@@ -13,6 +13,9 @@ entity instruction_fetch is
         STALL_REQ: out std_logic;
         STALL: in stall_t;
         
+        FLUSH: in std_logic;
+        FLUSH_PC: in word_t;
+        
         PC: out word_t;
         INS: out word_t;
         
@@ -56,7 +59,9 @@ begin
         if RST = '1' then
             pc_reg <= (others => '0');
         elsif rising_edge(CLK) then
-            if STALL(stage_if downto stage_pc) = "01" then
+            if FLUSH = '1' then
+                pc_reg <= FLUSH_PC;
+            elsif STALL(stage_if downto stage_pc) = "01" then
                 pc_reg <= (others => '0');
             elsif STALL(stage_if downto stage_pc) = "11" then
                 -- do nothing

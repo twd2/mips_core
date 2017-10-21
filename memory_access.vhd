@@ -19,6 +19,10 @@ entity memory_access is
         WRITE_ADDR: in reg_addr_t;
         WRITE_DATA: in word_t;
         WRITE_MEM_DATA: in word_t;
+        HI_WRITE_EN: in std_logic;
+        HI_WRITE_DATA: in word_t;
+        LO_WRITE_EN: in std_logic;
+        LO_WRITE_DATA: in word_t;
         
         PC_O: out word_t;
         OP_O: out op_t;
@@ -26,6 +30,10 @@ entity memory_access is
         WRITE_EN_O: out std_logic;
         WRITE_ADDR_O: out reg_addr_t;
         WRITE_DATA_O: out word_t;
+        HI_WRITE_EN_O: out std_logic;
+        HI_WRITE_DATA_O: out word_t;
+        LO_WRITE_EN_O: out std_logic;
+        LO_WRITE_DATA_O: out word_t;
         
         -- bus
         BUS_REQ: out bus_request_t;
@@ -46,6 +54,10 @@ begin
             WRITE_EN_O <= '0';
             WRITE_ADDR_O <= (others => '0');
             WRITE_DATA_O <= (others => '0');
+            HI_WRITE_EN_O <= '0';
+            HI_WRITE_DATA_O <= (others => '0');
+            LO_WRITE_EN_O <= '0';
+            LO_WRITE_DATA_O <= (others => '0');
             BUS_REQ.addr <= (others => '0');
             BUS_REQ.data <= (others => '0');
             BUS_REQ.byte_mask <= (others => '0');
@@ -58,6 +70,10 @@ begin
             WRITE_EN_O <= WRITE_EN;
             WRITE_ADDR_O <= WRITE_ADDR;
             WRITE_DATA_O <= WRITE_DATA;
+            HI_WRITE_EN_O <= HI_WRITE_EN;
+            HI_WRITE_DATA_O <= HI_WRITE_DATA;
+            LO_WRITE_EN_O <= LO_WRITE_EN;
+            LO_WRITE_DATA_O <= LO_WRITE_DATA;
             BUS_REQ.addr <= (others => 'X');
             BUS_REQ.data <= (others => 'X');
             BUS_REQ.byte_mask <= (others => '0');

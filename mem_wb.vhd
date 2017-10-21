@@ -11,6 +11,7 @@ entity mem_wb is
         RST: in std_logic;
         
         STALL: in stall_t;
+        FLUSH: in std_logic;
 
         MEM_PC: in word_t;
         MEM_OP: in op_t;
@@ -18,13 +19,21 @@ entity mem_wb is
         MEM_WRITE_EN: in std_logic;
         MEM_WRITE_ADDR: in reg_addr_t;
         MEM_WRITE_DATA: in word_t;
+        MEM_HI_WRITE_EN: in std_logic;
+        MEM_HI_WRITE_DATA: in word_t;
+        MEM_LO_WRITE_EN: in std_logic;
+        MEM_LO_WRITE_DATA: in word_t;
         
         WB_PC: out word_t;
         WB_OP: out op_t;
         WB_FUNCT: out funct_t;
         WB_WRITE_EN: out std_logic;
         WB_WRITE_ADDR: out reg_addr_t;
-        WB_WRITE_DATA: out word_t
+        WB_WRITE_DATA: out word_t;
+        WB_HI_WRITE_EN: out std_logic;
+        WB_HI_WRITE_DATA: out word_t;
+        WB_LO_WRITE_EN: out std_logic;
+        WB_LO_WRITE_DATA: out word_t
     );
 end;
 
@@ -39,14 +48,22 @@ begin
             WB_WRITE_EN <= '0';
             WB_WRITE_ADDR <= (others => '0');
             WB_WRITE_DATA <= (others => '0');
+            WB_HI_WRITE_EN <= '0';
+            WB_HI_WRITE_DATA <= (others => '0');
+            WB_LO_WRITE_EN <= '0';
+            WB_LO_WRITE_DATA <= (others => '0');
         elsif rising_edge(CLK) then
-            if STALL(stage_wb downto stage_mem) = "01" then
+            if FLUSH = '1' or STALL(stage_wb downto stage_mem) = "01" then
                 WB_PC <= (others => '0');
                 WB_OP <= (others => '0');
                 WB_FUNCT <= (others => '0');
                 WB_WRITE_EN <= '0';
                 WB_WRITE_ADDR <= (others => '0');
                 WB_WRITE_DATA <= (others => '0');
+                WB_HI_WRITE_EN <= '0';
+                WB_HI_WRITE_DATA <= (others => '0');
+                WB_LO_WRITE_EN <= '0';
+                WB_LO_WRITE_DATA <= (others => '0');
             elsif STALL(stage_wb downto stage_mem) = "11" then
                 -- do nothing
             else
@@ -56,6 +73,10 @@ begin
                 WB_WRITE_EN <= MEM_WRITE_EN;
                 WB_WRITE_ADDR <= MEM_WRITE_ADDR;
                 WB_WRITE_DATA <= MEM_WRITE_DATA;
+                WB_HI_WRITE_EN <= MEM_HI_WRITE_EN;
+                WB_HI_WRITE_DATA <= MEM_HI_WRITE_DATA;
+                WB_LO_WRITE_EN <= MEM_LO_WRITE_EN;
+                WB_LO_WRITE_DATA <= MEM_LO_WRITE_DATA;
             end if;
         end if;
     end process;

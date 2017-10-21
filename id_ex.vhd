@@ -11,6 +11,7 @@ entity id_ex is
         RST: in std_logic;
 
         STALL: in stall_t;
+        FLUSH: in std_logic;
         
         ID_PC: in word_t;
         ID_OP: in op_t;
@@ -52,7 +53,7 @@ begin
             EX_WRITE_MEM_DATA <= (others => '0');
             EX_IS_LOAD <= '0';
         elsif rising_edge(CLK) then
-            if STALL(stage_ex downto stage_id) = "01" then
+            if FLUSH = '1' or STALL(stage_ex downto stage_id) = "01" then
                 EX_PC <= (others => '0');
                 EX_OP <= (others => '0');
                 EX_FUNCT <= (others => '0');
