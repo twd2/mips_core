@@ -101,6 +101,15 @@ begin
                     case funct_buff is
                         when func_addu =>
                             ALU_OP <= alu_addu;
+                        when func_jalr =>
+                            ALU_OP <= alu_addu;
+                            OPERAND_0 <= PC;
+                            OPERAND_1 <= x"00000004";
+                            WRITE_EN <= '1';
+                            WRITE_ADDR <= rd;
+                            
+                            BRANCH_EN <= '1';
+                            BRANCH_PC <= READ_DATA_0;
                         when others =>
                             WRITE_EN <= '0';
                     end case;
