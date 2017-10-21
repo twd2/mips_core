@@ -22,6 +22,7 @@ package constants is
     constant op_jal: std_logic_vector := "000011";
     constant op_lw: std_logic_vector := "100011";
     constant op_sw: std_logic_vector := "101011";
+    constant op_lui: std_logic_vector := "001111";
 
     constant func_add: std_logic_vector := "100000";
     constant func_addu: std_logic_vector := "100001";

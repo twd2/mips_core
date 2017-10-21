@@ -93,7 +93,7 @@ begin
             IS_LOAD <= '0';
 
             case op_buff is
-                when op_special => -- type R
+                when op_special =>
                     OPERAND_0 <= READ_DATA_0;
                     OPERAND_1 <= READ_DATA_1;
                     WRITE_EN <= '1';
@@ -113,16 +113,22 @@ begin
                         when others =>
                             WRITE_EN <= '0';
                     end case;
-                when op_ori => -- type I, zero extended
+                when op_ori =>
                     ALU_OP <= alu_or;
                     OPERAND_0 <= READ_DATA_0;
                     OPERAND_1 <= zero_bits & imm;
                     WRITE_EN <= '1';
                     WRITE_ADDR <= rt;
-                when op_addiu => -- type I, sign extended
+                when op_addiu =>
                     ALU_OP <= alu_addu;
                     OPERAND_0 <= READ_DATA_0;
                     OPERAND_1 <= sign_bits & imm;
+                    WRITE_EN <= '1';
+                    WRITE_ADDR <= rt;
+                when op_lui =>
+                    ALU_OP <= alu_or;
+                    OPERAND_0 <= imm & zero_bits;
+                    OPERAND_1 <= zero_word;
                     WRITE_EN <= '1';
                     WRITE_ADDR <= rt;
                 when op_lw =>
