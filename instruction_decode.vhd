@@ -47,6 +47,11 @@ architecture behavioral of instruction_decode is
     signal funct_buff: funct_t;
     signal imm, zero_bits, sign_bits: std_logic_vector(15 downto 0);
     signal ins_addr: std_logic_vector(25 downto 0);
+    
+    -- for branch instrutions
+    signal pc_offset_imm, cb_target: word_t;
+    signal reg_0_eq_reg_1, reg_0_eq_0, reg_0_sign: std_logic;
+    signal cb_type: std_logic_vector(4 downto 0);
 begin
     op_buff <= INS(31 downto 26);
     rs <= INS(25 downto 21);
@@ -58,6 +63,14 @@ begin
     zero_bits <= (others => '0');
     sign_bits <= (others => imm(15));
     ins_addr <= INS(25 downto 0);
+    
+    cb_type <= INS(20 downto 16);
+    pc_offset_imm <= (13 downto 0 => imm(15)) & imm & "00";
+    cb_target <= PC + pc_offset_imm;
+    
+    reg_0_eq_reg_1 <= '1' when READ_DATA_0 = READ_DATA_1 else '0';
+    reg_0_eq_0 <= '1' when READ_DATA_0 = zero_word else '0';
+    reg_0_sign <= READ_DATA_0(word_length - 1);
     
     process(all)
     begin
@@ -143,10 +156,13 @@ begin
                     OPERAND_0 <= READ_DATA_0;
                     OPERAND_1 <= sign_bits & imm;
                     WRITE_MEM_DATA <= READ_DATA_1;
+                when op_beq =>
+                    BRANCH_EN <= reg_0_eq_reg_1;
+                    BRANCH_PC <= cb_target;
+                when op_bne =>
+                    BRANCH_EN <= not reg_0_eq_reg_1;
+                    BRANCH_PC <= cb_target;
                 when op_j => -- type J
-                    OPERAND_0 <= (others => 'X');
-                    OPERAND_1 <= (others => 'X');
-                    
                     BRANCH_EN <= '1';
                     BRANCH_PC <= PC(31 downto 28) & ins_addr & "00";
                 when op_jal => -- type J
@@ -160,6 +176,19 @@ begin
                     
                     BRANCH_EN <= '1';
                     BRANCH_PC <= PC(31 downto 28) & ins_addr & "00";
+                when op_regimm =>
+                    case cb_type is
+                        when cb_bgezal =>
+                            ALU_OP <= alu_addu;
+                            OPERAND_0 <= PC;
+                            OPERAND_1 <= x"00000004";
+                            WRITE_EN <= '1';
+                            WRITE_ADDR <= "11111"; -- 31
+                            
+                            BRANCH_EN <= not reg_0_sign;
+                            BRANCH_PC <= cb_target;
+                        when others =>
+                    end case;
                 when others =>
             end case;
         end if;

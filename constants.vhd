@@ -16,6 +16,7 @@ package constants is
     constant stage_wb: integer := 5;
 
     constant op_special: std_logic_vector := "000000";
+    constant op_regimm: std_logic_vector := "000001";
     constant op_addiu: std_logic_vector := "001001";
     constant op_ori: std_logic_vector := "001101";
     constant op_j: std_logic_vector := "000010";
@@ -23,10 +24,14 @@ package constants is
     constant op_lw: std_logic_vector := "100011";
     constant op_sw: std_logic_vector := "101011";
     constant op_lui: std_logic_vector := "001111";
+    constant op_beq: std_logic_vector := "000100";
+    constant op_bne: std_logic_vector := "000101";
 
     constant func_add: std_logic_vector := "100000";
     constant func_addu: std_logic_vector := "100001";
     constant func_jalr: std_logic_vector := "001001";
+    
+    constant cb_bgezal: std_logic_vector := "10001";
     
     constant ins_nop: std_logic_vector := x"00000000";
 
