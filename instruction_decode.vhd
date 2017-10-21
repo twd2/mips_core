@@ -119,13 +119,12 @@ begin
                     OPERAND_1 <= zero_bits & imm;
                     WRITE_EN <= '1';
                     WRITE_ADDR <= rt;
-                /*when op_addiu => -- type I, sign extended
+                when op_addiu => -- type I, sign extended
                     ALU_OP <= alu_addu;
                     OPERAND_0 <= READ_DATA_0;
                     OPERAND_1 <= sign_bits & imm;
                     WRITE_EN <= '1';
                     WRITE_ADDR <= rt;
-                */
                 when op_lw =>
                     ALU_OP <= alu_addu;
                     OPERAND_0 <= READ_DATA_0;
