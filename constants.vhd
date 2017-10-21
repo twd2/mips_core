@@ -2,9 +2,11 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 
 package constants is
+    constant word_length: integer := 32;
     constant reg_count: integer := 32;
     constant has_zero_reg: std_logic := '1';
     constant zero_reg_addr: std_logic_vector := "00000";
+    constant zero_word: std_logic_vector(word_length - 1 downto 0) := (others => '0');
     
     constant stage_pc: integer := 0;
     constant stage_if: integer := 1;
