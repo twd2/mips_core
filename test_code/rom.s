@@ -19,6 +19,15 @@ start:
   mflo $4
   mflo $5
   mfhi $1
+  div $0, $1, $2
+  mflo $3
+  mfhi $4
+  divu $0, $1, $2
+  divu $0, $1, $2
+  mflo $5
+  mfhi $6
+  beq $2, $0, start
+  divu $0, $1, $2
   ori $1, $0, 0x0
   lui $9, 0xfa50
   ori $10, $0, 0x0001
