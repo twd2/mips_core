@@ -43,11 +43,10 @@ end;
 
 architecture behavioral of memory_access is
 begin
-    STALL_REQ <= '0'; -- TODO
-
     process(all)
     begin
         if RST = '1' then
+            STALL_REQ <= '0';
             PC_O <= (others => '0');
             OP_O <= (others => '0');
             FUNCT_O <= (others => '0');
@@ -64,6 +63,7 @@ begin
             BUS_REQ.en <= '0';
             BUS_REQ.nread_write <= '0';
         else
+            STALL_REQ <= '0';
             PC_O <= PC;
             OP_O <= OP;
             FUNCT_O <= FUNCT;
@@ -86,6 +86,8 @@ begin
                     BUS_REQ.byte_mask <= (others => '1');
                     BUS_REQ.en <= '1';
                     BUS_REQ.nread_write <= '0';
+                    
+                    STALL_REQ <= not BUS_RES.done; -- wait BUS_RES.done
                     WRITE_DATA_O <= BUS_RES.data;
                 when op_sw =>
                     BUS_REQ.addr <= ALU_RESULT;
@@ -93,9 +95,11 @@ begin
                     BUS_REQ.en <= '1';
                     BUS_REQ.nread_write <= '1';
                     BUS_REQ.data <= WRITE_MEM_DATA;
+                    
+                    STALL_REQ <= not BUS_RES.done; -- wait BUS_RES.done
                 when others =>
             end case;
-            -- TODO(twd2): wait BUS_RES.done and check BUS_RES.tlb_miss, page_fault or error
+            -- TODO(twd2): check BUS_RES.tlb_miss, page_fault or error
         end if;
     end process;
 end;

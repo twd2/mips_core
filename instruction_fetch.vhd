@@ -34,7 +34,7 @@ architecture behavioral of instruction_fetch is
 begin
     pc_4 <= pc_reg + 4;
 
-    -- TODO(twd2): wait BUS_RES.done and check BUS_RES.tlb_miss, page_fault or error
+    -- TODO(twd2): check BUS_RES.tlb_miss, page_fault or error
     BUS_REQ.data <= (others => 'X');
     BUS_REQ.addr <= pc_reg;
     BUS_REQ.byte_mask <= (others => '1');
@@ -43,7 +43,7 @@ begin
     INS <= BUS_RES.data;
     PC <= pc_4;
     
-    STALL_REQ <= '0'; -- TODO
+    STALL_REQ <= not BUS_RES.done; -- wait BUS_RES.done
 
     process(pc_4, BRANCH_EN, BRANCH_PC)
     begin
