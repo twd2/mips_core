@@ -7,7 +7,14 @@ entity mips_core is
     port
     (
         CLK: in std_logic;
-        nRST: in std_logic;
+        RST: in std_logic;
+        
+        INS_BUS_REQ: out bus_request_t;
+        INS_BUS_RES: in bus_response_t;
+        DATA_BUS_REQ: out bus_request_t;
+        DATA_BUS_RES: in bus_response_t;
+        
+        IRQ: in std_logic_vector(5 downto 0);
         
         testen: out std_logic;
         test_0: out reg_addr_t;
@@ -16,16 +23,6 @@ entity mips_core is
 end;
 
 architecture behavioral of mips_core is
-    component ram is
-        port
-        (
-            CLK: in std_logic;
-            
-            BUS_REQ: in bus_request_t;
-            BUS_RES: out bus_response_t
-        );
-    end component;
-    
     component reg_file is
         port
         (
@@ -420,20 +417,8 @@ architecture behavioral of mips_core is
             WB_LO_WRITE_DATA: out word_t
         );
     end component;
-    
-    component memory IS
-        PORT
-        (
-            address		: IN STD_LOGIC_VECTOR (9 DOWNTO 0);
-            byteena		: IN STD_LOGIC_VECTOR (3 DOWNTO 0) :=  (OTHERS => '1');
-            clock		: IN STD_LOGIC  := '1';
-            data		: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
-            wren		: IN STD_LOGIC ;
-            q		: OUT STD_LOGIC_VECTOR (31 DOWNTO 0)
-        );
-    END component;
  
-    signal RST, comb_rst: std_logic;
+    signal comb_rst: std_logic;
     
     signal reg_read_addr_0: reg_addr_t;
     signal reg_read_data_0: word_t;
@@ -449,9 +434,6 @@ architecture behavioral of mips_core is
     signal stall: stall_t;
     
     signal if_pc, if_ins: word_t;
-    
-    signal if_bus_req: bus_request_t;
-    signal if_bus_res: bus_response_t;
     
     signal id_pc, id_ins, id_pc_o: word_t;
     
@@ -529,9 +511,6 @@ architecture behavioral of mips_core is
     signal mem_hi_write_data_o: word_t;
     signal mem_lo_write_en_o: std_logic;
     signal mem_lo_write_data_o: word_t;
-    
-    signal mem_bus_req: bus_request_t;
-    signal mem_bus_res: bus_response_t;
 
     signal wb_pc: word_t;
     signal wb_op: op_t;
@@ -544,21 +523,11 @@ architecture behavioral of mips_core is
     signal wb_lo_write_en: std_logic;
     signal wb_lo_write_data: word_t;
 begin
-    RST <= not nRST;
     comb_rst <= '0';
     
     testen <= wb_write_en;
     test_0 <= wb_write_addr;
     test_1 <= wb_write_data;
-    
-    ram_inst: ram
-    port map
-    (
-        CLK => CLK,
-    
-        BUS_REQ => if_bus_req,
-        BUS_RES => if_bus_res
-    );
     
     reg_file_inst: reg_file
     port map
@@ -682,8 +651,8 @@ begin
         BRANCH_EN => id_branch_en,
         BRANCH_PC => id_branch_pc,
         
-        BUS_REQ => if_bus_req,
-        BUS_RES => if_bus_res
+        BUS_REQ => INS_BUS_REQ,
+        BUS_RES => INS_BUS_RES
     );
     
     if_id_inst: if_id
@@ -896,8 +865,8 @@ begin
         LO_WRITE_EN_O => mem_lo_write_en_o,
         LO_WRITE_DATA_O => mem_lo_write_data_o,
         
-        BUS_REQ => mem_bus_req,
-        BUS_RES => mem_bus_res
+        BUS_REQ => DATA_BUS_REQ,
+        BUS_RES => DATA_BUS_RES
     );
     
     mem_wb_inst: mem_wb
@@ -931,21 +900,4 @@ begin
         WB_LO_WRITE_EN => wb_lo_write_en,
         WB_LO_WRITE_DATA => wb_lo_write_data
     );
-    
-    memory_inst: memory
-    port map
-    (
-        address => mem_bus_req.addr(11 downto 2),
-        byteena => mem_bus_req.byte_mask,
-        clock => not CLK,
-        data => mem_bus_req.data,
-        wren => mem_bus_req.nread_write,
-        q => mem_bus_res.data
-    );
-    
-    -- TODO: real bus
-    mem_bus_res.done <= '1';
-    mem_bus_res.tlb_miss <= '0';
-    mem_bus_res.page_fault <= '0';
-    mem_bus_res.error <= '0';
 end;

@@ -4,7 +4,7 @@ use IEEE.std_logic_unsigned.all;
 use work.constants.all;
 use work.types.all;
 
-entity test_mips_core is
+entity test_mips_sopc is
     port
     (
         dummy1: in std_logic;
@@ -12,8 +12,8 @@ entity test_mips_core is
     );
 end;
 
-architecture behavioral of test_mips_core is
-    component mips_core is
+architecture behavioral of test_mips_sopc is
+    component mips_sopc is
         port
         (
             CLK: in std_logic;
@@ -32,7 +32,7 @@ architecture behavioral of test_mips_core is
     signal test_0: reg_addr_t;
     signal test_1: word_t;
 begin
-    mips_core_inst: mips_core
+    mips_sopc_inst: mips_sopc
     port map
     (
         CLK => CLK,
