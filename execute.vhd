@@ -112,12 +112,12 @@ begin
             WRITE_DATA <= alu_result_buff;
             WRITE_MEM_DATA_O <= WRITE_MEM_DATA;
             HI_WRITE_EN <= '0';
-            HI_WRITE_DATA <= (others => '0');
+            HI_WRITE_DATA <= (others => 'X');
             LO_WRITE_EN <= '0';
-            LO_WRITE_DATA <= (others => '0');
-            DIV_DIVIDEND <= (others => '0');
-            DIV_DIV <= (others => '0');
-            DIV_SIGN <= '0';
+            LO_WRITE_DATA <= (others => 'X');
+            DIV_DIVIDEND <= (others => 'X');
+            DIV_DIV <= (others => 'X');
+            DIV_SIGN <= 'X';
             DIV_EN <= '0';
 
             -- TODO(twd2): address of load/store

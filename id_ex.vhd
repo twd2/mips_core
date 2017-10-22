@@ -58,11 +58,11 @@ begin
                 EX_OP <= (others => '0');
                 EX_FUNCT <= (others => '0');
                 EX_ALU_OP <= alu_nop;
-                EX_OPERAND_0 <= (others => '0');
-                EX_OPERAND_1 <= (others => '0');
+                EX_OPERAND_0 <= (others => 'X');
+                EX_OPERAND_1 <= (others => 'X');
                 EX_WRITE_EN <= '0';
-                EX_WRITE_ADDR <= (others => '0');
-                EX_WRITE_MEM_DATA <= (others => '0');
+                EX_WRITE_ADDR <= (others => 'X');
+                EX_WRITE_MEM_DATA <= (others => 'X');
                 EX_IS_LOAD <= '0';
             elsif STALL(stage_ex downto stage_id) = "11" then
                 -- do nothing

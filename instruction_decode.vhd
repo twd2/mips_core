@@ -99,10 +99,10 @@ begin
             OPERAND_0 <= (others => 'X');
             OPERAND_1 <= (others => 'X');
             WRITE_EN <= '0';
-            WRITE_ADDR <= (others => '0');
+            WRITE_ADDR <= (others => 'X');
             WRITE_MEM_DATA <= (others => 'X');
             BRANCH_EN <= '0';
-            BRANCH_PC <= PC;
+            BRANCH_PC <= (others => 'X');
             IS_LOAD <= '0';
 
             case op_buff is
@@ -118,8 +118,6 @@ begin
                             ALU_OP <= alu_addu;
                             OPERAND_0 <= PC;
                             OPERAND_1 <= x"00000004";
-                            WRITE_EN <= '1';
-                            WRITE_ADDR <= rd;
                             
                             BRANCH_EN <= '1';
                             BRANCH_PC <= READ_DATA_0;
@@ -127,10 +125,13 @@ begin
                             -- nothing
                         when func_mthi | func_mtlo =>
                             WRITE_EN <= '0';
+                            WRITE_ADDR <= (others => 'X');
                         when func_div | func_divu =>
                             WRITE_EN <= '0';
+                            WRITE_ADDR <= (others => 'X');
                         when others =>
                             WRITE_EN <= '0';
+                            WRITE_ADDR <= (others => 'X');
                     end case;
                 when op_ori =>
                     ALU_OP <= alu_or;

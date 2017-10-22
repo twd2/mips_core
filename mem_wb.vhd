@@ -58,12 +58,12 @@ begin
                 WB_OP <= (others => '0');
                 WB_FUNCT <= (others => '0');
                 WB_WRITE_EN <= '0';
-                WB_WRITE_ADDR <= (others => '0');
-                WB_WRITE_DATA <= (others => '0');
+                WB_WRITE_ADDR <= (others => 'X');
+                WB_WRITE_DATA <= (others => 'X');
                 WB_HI_WRITE_EN <= '0';
-                WB_HI_WRITE_DATA <= (others => '0');
+                WB_HI_WRITE_DATA <= (others => 'X');
                 WB_LO_WRITE_EN <= '0';
-                WB_LO_WRITE_DATA <= (others => '0');
+                WB_LO_WRITE_DATA <= (others => 'X');
             elsif STALL(stage_wb downto stage_mem) = "11" then
                 -- do nothing
             else

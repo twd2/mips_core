@@ -63,15 +63,15 @@ begin
                 MEM_PC <= (others => '0');
                 MEM_OP <= (others => '0');
                 MEM_FUNCT <= (others => '0');
-                MEM_ALU_RESULT <= (others => '0');
+                MEM_ALU_RESULT <= (others => 'X');
                 MEM_WRITE_EN <= '0';
-                MEM_WRITE_ADDR <= (others => '0');
-                MEM_WRITE_DATA <= (others => '0');
-                MEM_WRITE_MEM_DATA <= (others => '0');
+                MEM_WRITE_ADDR <= (others => 'X');
+                MEM_WRITE_DATA <= (others => 'X');
+                MEM_WRITE_MEM_DATA <= (others => 'X');
                 MEM_HI_WRITE_EN <= '0';
-                MEM_HI_WRITE_DATA <= (others => '0');
+                MEM_HI_WRITE_DATA <= (others => 'X');
                 MEM_LO_WRITE_EN <= '0';
-                MEM_LO_WRITE_DATA <= (others => '0');
+                MEM_LO_WRITE_DATA <= (others => 'X');
             elsif STALL(stage_mem downto stage_ex) = "11" then
                 -- do nothing
             else

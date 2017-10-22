@@ -76,7 +76,7 @@ begin
             LO_WRITE_DATA_O <= LO_WRITE_DATA;
             BUS_REQ.addr <= (others => 'X');
             BUS_REQ.data <= (others => 'X');
-            BUS_REQ.byte_mask <= (others => '0');
+            BUS_REQ.byte_mask <= (others => 'X');
             BUS_REQ.en <= '0';
             BUS_REQ.nread_write <= '0';
             
