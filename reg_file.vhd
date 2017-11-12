@@ -35,7 +35,7 @@ begin
     read0_proc:
     process(reg, read_addr_0_i)
     begin
-        if read_addr_0_i /= 0 then
+        if read_addr_0_i /= 0 or has_zero_reg = '0' then
             READ_DATA_0 <= reg(read_addr_0_i);
         else
             READ_DATA_0 <= (others => '0');
@@ -45,7 +45,7 @@ begin
     read1_proc:
     process(reg, read_addr_1_i)
     begin
-        if read_addr_1_i /= 0 then
+        if read_addr_1_i /= 0 or has_zero_reg = '0' then
             READ_DATA_1 <= reg(read_addr_1_i);
         else
             READ_DATA_1 <= (others => '0');
