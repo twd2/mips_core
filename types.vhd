@@ -20,6 +20,7 @@ package types is
 
     type bus_response_t is record -- input for host, output for device
         data: word_t;
+        grant: std_logic;
         done: std_logic;
         tlb_miss: std_logic;
         page_fault: std_logic;
