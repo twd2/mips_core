@@ -3,6 +3,7 @@ use IEEE.std_logic_1164.all;
 
 package constants is
     constant word_length: integer := 32;
+    constant word_msb: integer := word_length - 1;
     constant reg_count: integer := 32;
     constant has_zero_reg: std_logic := '1';
     constant zero_reg_addr: std_logic_vector := "00000";
