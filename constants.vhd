@@ -41,7 +41,8 @@ package constants is
     
     constant ins_nop: std_logic_vector := x"00000000";
 
-    type alu_op_t is (alu_nop, alu_addu, alu_subu, alu_or, alu_and, alu_xor, alu_not, alu_neg,
-                      alu_sll, alu_sar, alu_slr,
-                      alu_sel0, alu_sel1);
+    type alu_op_t is (alu_nop,
+                      alu_addu, alu_subu,
+                      alu_or, alu_and, alu_xor, alu_nor,
+                      alu_sll, alu_sra, alu_srl);
 end;

@@ -40,20 +40,14 @@ begin
                     RESULT <= OPERAND_0 and OPERAND_1;
                 when alu_xor =>
                     RESULT <= OPERAND_0 xor OPERAND_1;
-                when alu_not =>
-                    RESULT <= not OPERAND_0;
-                when alu_neg =>
-                    RESULT <= not OPERAND_0 + 1;
+                when alu_nor =>
+                    RESULT <= OPERAND_0 nor OPERAND_1;
                 when alu_sll =>
                     RESULT <= to_stdlogicvector(to_bitvector(OPERAND_0) sll shamt);
-                when alu_slr =>
+                when alu_srl =>
                     RESULT <= to_stdlogicvector(to_bitvector(OPERAND_0) srl shamt);
-                when alu_sar =>
+                when alu_sra =>
                     RESULT <= to_stdlogicvector(to_bitvector(OPERAND_0) sra shamt);
-                when alu_sel0 =>
-                    RESULT <= OPERAND_0;
-                when alu_sel1 =>
-                    RESULT <= OPERAND_1;
                 when others =>
                     RESULT <= (others => 'X');
             end case;
